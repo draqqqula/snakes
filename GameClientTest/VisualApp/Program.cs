@@ -6,12 +6,12 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 using System.Threading;
 using VisualApp;
+using System.Net;
 
 var sessionId = File.ReadLines("sessionId.txt").First();
-
 var builder = new UriBuilder()
 {
-    Host = "localhost",
+    Host = "26.181.15.68",
     Scheme = "wss",
     Port = 7170,
     Path = "sessions",
@@ -21,6 +21,7 @@ var builder = new UriBuilder()
 using var game = new VisualApp.GameApp();
 using (ClientWebSocket ws = new ClientWebSocket())
 {
+    ws.Options.RemoteCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
     await ws.ConnectAsync(builder.Uri, CancellationToken.None);
     var client = new GameClient(ws, game);
 

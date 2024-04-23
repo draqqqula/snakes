@@ -11,18 +11,18 @@ namespace SnakeGame.Services.Gameplay;
 
 internal class PickupSpawnerService(
     Dictionary<ClientIdentifier, SnakeCharacter> Players, 
-    ICollisionChecker CollisionChecker
+    ICollisionChecker CollisionChecker,
+    Dictionary<Guid, TilePickup> Pickups
     ) : 
     IUpdateService, IOutputService<FrameDisplayOutput>
 {
-    private readonly Dictionary<Guid, TilePickup> _pickups = [];
     private float Time = 0f;
 
     private const int MaxPickups = 128;
 
     public IEnumerable<FrameDisplayOutput> Pass()
     {
-        foreach ( var tile in _pickups )
+        foreach ( var tile in Pickups )
         {
             yield return new FrameDisplayOutput()
             {
@@ -38,12 +38,12 @@ internal class PickupSpawnerService(
     {
         foreach (var player in Players)
         {
-            foreach (var tile in _pickups.ToArray())
+            foreach (var tile in Pickups.ToArray())
             {
                 if (CollisionChecker.IsColliding(player.Value, tile.Value))
                 {
                     tile.Value.Rotation += context.DeltaTime;
-                    _pickups.Remove(tile.Key);
+                    Pickups.Remove(tile.Key);
                     player.Value.JoinPart(tile.Value.Tier);
                 }
             }
@@ -53,7 +53,7 @@ internal class PickupSpawnerService(
 
         if (Time > 5f)
         {
-            for (int i = 0; i < Math.Min(6, MaxPickups-_pickups.Count); i++)
+            for (int i = 0; i < Math.Min(6, MaxPickups-Pickups.Count); i++)
             {
                 var tile = new TilePickup()
                 {
@@ -61,7 +61,7 @@ internal class PickupSpawnerService(
                     Rotation = Random.Shared.NextSingle() * MathF.PI,
                     Tier = (byte)Random.Shared.Next(0, 2)
                 };
-                _pickups.Add(Guid.NewGuid(), tile);
+                Pickups.Add(Guid.NewGuid(), tile);
                 Time = 0f;
             }
         }

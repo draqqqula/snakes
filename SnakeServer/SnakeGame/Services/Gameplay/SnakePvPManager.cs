@@ -11,17 +11,38 @@ internal class SnakePvPManager
     (
     Dictionary<ClientIdentifier, SnakeCharacter> Players,
     ICollisionResolver<RotatableSquare, RotatableSquare> collision,
-    CharacterFabric fabric
+    CharacterFabric fabric,
+    Dictionary<Guid, TilePickup> Pickups
     ) : IUpdateService
 {
     public void Update(IGameContext context)
     {
         foreach (var player1 in Players.Values)
         {
-            foreach (var player2 in Players.Values.Where(it => it.Body.Count > 0).Except([player1]))
+            if (player1.Body.Count == 0)
             {
+                continue;
+            }
+            foreach (var player2 in Players.Values.Except([player1]))
+            {
+                if (player2.Body.Count == 0)
+                {
+                    continue;
+                }
+                var collapse = false;
                 foreach (var part in player1.Body.ToArray())
                 {
+                    if (collapse)
+                    {
+                        player1.Body.Remove(part);
+                        Pickups.Add(Guid.NewGuid(), new TilePickup() 
+                        {
+                            Position = part.Position,
+                            Rotation = part.Rotation,
+                            Tier = part.Tier,
+                        });
+                        continue;
+                    }
                     if (player2.GetBody().Any(it => collision.IsColliding(new RotatableSquare()
                     {
                         Position = part.Position,
@@ -37,6 +58,7 @@ internal class SnakePvPManager
                         {
                             player2.JoinPart((byte)part.Value);
                             player1.Body.Remove(part);
+                            collapse = true;
                         }
                     }
                 }

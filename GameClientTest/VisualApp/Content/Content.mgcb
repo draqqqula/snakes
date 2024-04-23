@@ -35,7 +35,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:body1024.png;body10.png
+/build:body1024.png;body9.png
 
 #begin body128.png
 /importer:TextureImporter
@@ -119,7 +119,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:body512.png;body9.png
+/build:body512.png;body8.png
 
 #begin body64.png
 /importer:TextureImporter
