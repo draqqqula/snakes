@@ -11,7 +11,7 @@ public enum MovementDirection
 }
 public struct MovementDirectionInput
 {
-    public required MovementDirection Direction { get; init; }
+    public required float Angle { get; init; }
 }
 
 public static class MovementDirectionExtensions
@@ -25,6 +25,18 @@ public static class MovementDirectionExtensions
             case MovementDirection.Up: return new Vector2(0, 1);
             case MovementDirection.Down: return new Vector2(0, -1);
             default: return Vector2.Zero;
+        }
+    }
+
+    public static float ToDirection(this MovementDirection direction)
+    {
+        switch (direction)
+        {
+            case MovementDirection.Left: return MathF.PI;
+            case MovementDirection.Right: return 0;
+            case MovementDirection.Up: return MathF.PI * 0.5f;
+            case MovementDirection.Down: return MathF.PI * 1.5f;
+            default: return MathF.PI;
         }
     }
 

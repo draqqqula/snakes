@@ -38,7 +38,7 @@ public class SessionController : ControllerBase
 
     private static async Task RecieveInLoopAsync(ISessionConnection connection, WebSocket webSocket)
     {
-        var buffer = new byte[2^11];
+        var buffer = new byte[4];
         var receiveResult = await webSocket.ReceiveAsync(
             new ArraySegment<byte>(buffer), CancellationToken.None);
 

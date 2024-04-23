@@ -13,6 +13,8 @@ namespace VisualApp
 {
     public class GameApp : Game
     {
+        public SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
+        public MobileJoystick Joystick { get; set; } = new MobileJoystick();
         public ConcurrentQueue<Keys> PressedKeys { get; } = [];
         public FrameDisplayForm[] DisplayBuffer { get; set; } = [];
 
@@ -39,22 +41,31 @@ namespace VisualApp
 
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Left) && !PressedKeys.Contains(Keys.Left))
+            Semaphore.Wait();
+            var mouseState = Mouse.GetState();
+
+            if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                PressedKeys.Enqueue(Keys.Left);
+                if (!Joystick.Active)
+                {
+                    Joystick.ScreenPosition = mouseState.Position.ToVector2();
+                }
+                Joystick.Active = true;
+                var delta = mouseState.Position.ToVector2() - Joystick.ScreenPosition;
+                var length = MathF.Min(delta.Length(), 65f);
+                var directionVector = Vector2.Normalize(delta);
+
+                var angle = MathF.Atan2(directionVector.Y, directionVector.X);
+                Joystick.Direction = angle;
+
+                Joystick.DotPosition = Joystick.ScreenPosition + directionVector * length;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Right) && !PressedKeys.Contains(Keys.Right))
+            else
             {
-                PressedKeys.Enqueue(Keys.Right);
+                Joystick.Active = false;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Down) && !PressedKeys.Contains(Keys.Down))
-            {
-                PressedKeys.Enqueue(Keys.Down);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Up) && !PressedKeys.Contains(Keys.Up))
-            {
-                PressedKeys.Enqueue(Keys.Up);
-            }
+            Semaphore.Release();
+
             base.Update(gameTime);
         }
 
@@ -68,6 +79,14 @@ namespace VisualApp
             {
                 var texture = Content.Load<Texture2D>(frame.Name);
                 _spriteBatch.Draw(texture, frame.Position + new Vector2(Window.ClientBounds.Width/2, Window.ClientBounds.Height/2), null, Color.White, frame.Rotation, texture.Bounds.Center.ToVector2(), frame.Scale, SpriteEffects.None, 0);
+            }
+
+            if (Joystick.Active)
+            {
+                var joystickBase = Content.Load<Texture2D>("joystick_base");
+                _spriteBatch.Draw(joystickBase, Joystick.ScreenPosition, null, Color.White, 0f, joystickBase.Bounds.Center.ToVector2(), 1f, SpriteEffects.None, 0);
+                var joystickDot = Content.Load<Texture2D>("joystick");
+                _spriteBatch.Draw(joystickDot, Joystick.DotPosition, null, Color.White, 0f, joystickDot.Bounds.Center.ToVector2(), 1f, SpriteEffects.None, 0);
             }
 
             _spriteBatch.End();

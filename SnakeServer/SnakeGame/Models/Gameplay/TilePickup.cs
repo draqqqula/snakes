@@ -9,7 +9,7 @@ internal class TilePickup : IBodyComponent<RotatableSquare>
 {
     public required float Rotation { get; set; }
     public required Vector2 Position { get; init; }
-    public required int Value { get; init; }
+    public required byte Tier { get; init; }
 
     public IEnumerable<RotatableSquare> GetBody()
     {

@@ -13,8 +13,8 @@ internal class MovementDirectionInputFormatter(
     public bool TryResolve(BinaryInput input, ClientIdentifier id)
     {
         var model = new MovementDirectionInput()
-        { 
-            Direction = input.Data[0].ToDirection()
+        {
+            Angle = BitConverter.ToSingle(input.Data)
         };
         foreach (var service in services)
         {

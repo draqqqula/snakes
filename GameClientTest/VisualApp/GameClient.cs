@@ -35,29 +35,27 @@ internal class GameClient(WebSocket webSocket, GameApp game)
         }
     }
 
+    private const float DirectionMinDelta = MathF.PI/24;
+
     public async Task SendLoopAsync()
     {
+        var currentAngle = 0f;
         while (!webSocket.CloseStatus.HasValue)
         {
-            while (game.PressedKeys.TryDequeue(out var key))
+            await game.Semaphore.WaitAsync();
+
+            if (Math.Abs(currentAngle - game.Joystick.Direction) > DirectionMinDelta)
             {
-                byte keyId = 0;
-                switch (key)
-                {
-                    case Keys.Left: keyId = 1; break;
-                    case Keys.Right: keyId = 2; break;
-                    case Keys.Down: keyId = 3; break;
-                    case Keys.Up: keyId = 4; break;
-                }
-                if (keyId != 0)
-                {
-                    await webSocket.SendAsync(
-                    new byte[1] { keyId },
-                    WebSocketMessageType.Binary,
-                    true,
-                    CancellationToken.None);
-                }
+                await webSocket.SendAsync(
+                BitConverter.GetBytes(game.Joystick.Direction),
+                WebSocketMessageType.Binary,
+                true,
+                CancellationToken.None);
+                currentAngle = game.Joystick.Direction;
+
             }
+
+            game.Semaphore.Release();
         }
     }
 }

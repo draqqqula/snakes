@@ -26,13 +26,16 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<ICollisionResolver<Polygon, Polygon>, PolygonToPolygonResolver>();
         services.AddSingleton<ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox>, AABBToAABBResolver>();
         services.AddSingleton<ICollisionResolver<RotatableSquare, RotatableSquare>, RSquareToRSquareResolver>();
+        services.AddSingleton<ICollisionChecker, CollisionChecker>();
 
         services.AddSingleton<CharacterFabric, CharacterFabricA>();
         services.AddSingleton<PlayerSpawnerService>();
-        services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<PlayerSpawnerService>());
         services.AddSingleton<IInputService<MovementDirectionInput>>(provider => provider.GetRequiredService<PlayerSpawnerService>());
         services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<PlayerSpawnerService>());
         services.AddSingleton<IOutputService<FrameDisplayOutput>>(provider => provider.GetRequiredService<PlayerSpawnerService>());
+
+        services.AddSingleton<IUpdateService, SnakeBodyManager>();
+        services.AddSingleton<IUpdateService, SnakePvPManager>();
 
         services.AddSingleton<PickupSpawnerService>();
         services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<PickupSpawnerService>());

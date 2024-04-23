@@ -1,0 +1,53 @@
+﻿using ServerEngine.Interfaces;
+using ServerEngine.Interfaces.Services;
+using ServerEngine.Models;
+using SnakeGame.Mechanics.Collision;
+using SnakeGame.Mechanics.Collision.Shapes;
+using SnakeGame.Models.Gameplay;
+
+namespace SnakeGame.Services.Gameplay;
+
+internal class SnakePvPManager
+    (
+    Dictionary<ClientIdentifier, SnakeCharacter> Players,
+    ICollisionResolver<RotatableSquare, RotatableSquare> collision,
+    CharacterFabric fabric
+    ) : IUpdateService
+{
+    public void Update(IGameContext context)
+    {
+        foreach (var player1 in Players.Values)
+        {
+            foreach (var player2 in Players.Values.Where(it => it.Body.Count > 0).Except([player1]))
+            {
+                foreach (var part in player1.Body.ToArray())
+                {
+                    if (player2.GetBody().Any(it => collision.IsColliding(new RotatableSquare()
+                    {
+                        Position = part.Position,
+                        Rotation = part.Rotation,
+                        Size = 4 },
+                        it)))
+                    {
+                        if (part.Tier > player2.Body.Select(it => it.Tier).Max())
+                        {
+                            player2.Body.Clear();
+                        }
+                        else
+                        {
+                            player2.JoinPart((byte)part.Value);
+                            player1.Body.Remove(part);
+                        }
+                    }
+                }
+            }
+        }
+        foreach (var player in Players)
+        {
+            if (player.Value.Body.Count == 0)
+            {
+                Players[player.Key] = fabric.CreateCharacter();
+            }
+        }
+    }
+}
