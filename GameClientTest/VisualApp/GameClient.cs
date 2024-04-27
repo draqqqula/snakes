@@ -12,11 +12,12 @@ using System.Threading.Tasks;
 
 namespace VisualApp;
 
-internal class GameClient(WebSocket webSocket, GameApp game)
+internal class GameClient(WebSocket webSocket, GameApp game, FileStream log)
 {
 
     public async Task RecieveLoopAsync()
     {
+        var counter = 0;
         while (!webSocket.CloseStatus.HasValue)
         {
             var buffer = new byte[409600];
@@ -28,10 +29,13 @@ internal class GameClient(WebSocket webSocket, GameApp game)
             };
             var stream = new MemoryStream();
             var capacity = BitConverter.ToInt32(buffer.Take(8).ToArray());
+            log.Write(Encoding.UTF8.GetBytes($"\n{counter}"));
+            log.Write(buffer, 8, capacity);
             stream.Write(buffer, 8, capacity);
             stream.Position = 0;
             var pool = await JsonSerializer.DeserializeAsync<FrameDisplayForm[]>(stream, options);
             game.DisplayBuffer = pool;
+            counter++;
         }
     }
 
@@ -51,8 +55,8 @@ internal class GameClient(WebSocket webSocket, GameApp game)
                 WebSocketMessageType.Binary,
                 true,
                 CancellationToken.None);
-                currentAngle = game.Joystick.Direction;
 
+                currentAngle = game.Joystick.Direction;
             }
 
             game.Semaphore.Release();

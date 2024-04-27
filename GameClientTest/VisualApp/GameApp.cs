@@ -30,6 +30,8 @@ namespace VisualApp
 
         protected override void Initialize()
         {
+            this.TargetElapsedTime = TimeSpan.FromSeconds(1 / 101f);
+            this.IsFixedTimeStep = true;
             base.Initialize();
         }
 
@@ -41,6 +43,11 @@ namespace VisualApp
 
         protected override void Update(GameTime gameTime)
         {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                this.Exit();
+            }
+
             Semaphore.Wait();
             var mouseState = Mouse.GetState();
 

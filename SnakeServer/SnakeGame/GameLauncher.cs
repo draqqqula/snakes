@@ -30,17 +30,17 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<ICollisionChecker, CollisionChecker>();
 
         services.AddSingleton<CharacterFabric, CharacterFabricA>();
-        services.AddSingleton<PlayerSpawnerService>();
-        services.AddSingleton<IInputService<MovementDirectionInput>>(provider => provider.GetRequiredService<PlayerSpawnerService>());
-        services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<PlayerSpawnerService>());
-        services.AddSingleton<IOutputService<FrameDisplayOutput>>(provider => provider.GetRequiredService<PlayerSpawnerService>());
+        services.AddSingleton<SnakeSpawner>();
+        services.AddSingleton<IInputService<MovementDirectionInput>>(provider => provider.GetRequiredService<SnakeSpawner>());
+        services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<SnakeSpawner>());
+        services.AddSingleton<IOutputService<FrameDisplayOutput>>(provider => provider.GetRequiredService<SnakeSpawner>());
 
-        services.AddSingleton<IUpdateService, SnakeBodyManager>();
-        services.AddSingleton<IUpdateService, SnakePvPManager>();
+        services.AddSingleton<IUpdateService, SnakeMovementManager>();
+        services.AddSingleton<IUpdateService, SnakeCollisionManager>();
 
-        services.AddSingleton<PickupSpawnerService>();
-        services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<PickupSpawnerService>());
-        services.AddSingleton<IOutputService<FrameDisplayOutput>>(provider => provider.GetRequiredService<PickupSpawnerService>());
+        services.AddSingleton<PickupSpawner>();
+        services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<PickupSpawner>());
+        services.AddSingleton<IOutputService<FrameDisplayOutput>>(provider => provider.GetRequiredService<PickupSpawner>());
 
         services.AddSingleton<IInputFormatter<BinaryInput>, MovementDirectionInputFormatter>();
         services.AddOutputFabric<FrameDisplayOutput, BinaryOutput, FrameDisplayToBinaryOutputTransformer>();

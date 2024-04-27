@@ -13,6 +13,7 @@ public class LaunchController : ControllerBase
     {
         var session = await game.CreateSessionAsync(launcher);
         var id = storage.Add(session);
+        session.OnClosed += () => storage.Remove(id);
         return Ok(id);
     }
 }

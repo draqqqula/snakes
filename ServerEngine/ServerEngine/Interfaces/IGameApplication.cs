@@ -1,4 +1,6 @@
-﻿namespace ServerEngine.Interfaces;
+﻿using ServerEngine.Models;
+
+namespace ServerEngine.Interfaces;
 
 public interface IGameApplication
 {

@@ -7,7 +7,7 @@ using SnakeGame.Models.Gameplay;
 
 namespace SnakeGame.Services.Gameplay;
 
-internal class SnakePvPManager
+internal class SnakeCollisionManager
     (
     Dictionary<ClientIdentifier, SnakeCharacter> Players,
     ICollisionResolver<RotatableSquare, RotatableSquare> collision,
@@ -52,11 +52,20 @@ internal class SnakePvPManager
                     {
                         if (part.Tier > player2.Body.Select(it => it.Tier).Max())
                         {
+                            foreach (var part2 in player2.Body)
+                            {
+                                Pickups.Add(Guid.NewGuid(), new TilePickup()
+                                {
+                                    Position = part.Position,
+                                    Rotation = part.Rotation,
+                                    Tier = part.Tier,
+                                });
+                            }
                             player2.Body.Clear();
                         }
                         else
                         {
-                            player2.JoinPart((byte)part.Value);
+                            player2.JoinPart(part.Tier);
                             player1.Body.Remove(part);
                             collapse = true;
                         }

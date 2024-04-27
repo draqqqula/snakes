@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace SnakeGame.Services.Gameplay;
 
-internal class PickupSpawnerService(
+internal class PickupSpawner(
     Dictionary<ClientIdentifier, SnakeCharacter> Players, 
     ICollisionChecker CollisionChecker,
     Dictionary<Guid, TilePickup> Pickups

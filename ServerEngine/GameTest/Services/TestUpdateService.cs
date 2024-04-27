@@ -13,6 +13,12 @@ public class TestUpdateService : IUpdateService, IOutputService<TestOutput>
     }
 
     private int Counter { get; set; }
+
+    public IEnumerable<TestOutput> Pass()
+    {
+        throw new NotImplementedException();
+    }
+
     public void Update(IGameContext context)
     {
         Counter++;

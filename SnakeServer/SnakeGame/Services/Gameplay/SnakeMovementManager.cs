@@ -8,10 +8,10 @@ using System.Numerics;
 
 namespace SnakeGame.Services.Gameplay;
 
-internal class SnakeBodyManager(Dictionary<ClientIdentifier, SnakeCharacter> Players) : IUpdateService
+internal class SnakeMovementManager(Dictionary<ClientIdentifier, SnakeCharacter> Players) : IUpdateService
 {
     public const float MaxTrailLength = 4f;
-    public const float RotationSpeed = MathF.PI * 1.5f;
+    public const float RotationSpeed = MathF.PI * 2f;
     public void Update(IGameContext context)
     {
         foreach (var player in Players.Values)

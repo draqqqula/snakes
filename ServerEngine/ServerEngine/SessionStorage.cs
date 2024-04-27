@@ -2,7 +2,7 @@
 
 namespace ServerEngine;
 
-internal class SessionStorage : ISessionStorage<Guid>
+public class SessionStorage : ISessionStorage<Guid>
 {
     private readonly Dictionary<Guid, ISessionManager> Storage = [];
     public Guid Add(ISessionManager manager)
@@ -17,9 +17,9 @@ internal class SessionStorage : ISessionStorage<Guid>
         return Storage.Keys;
     }
 
-    public ISessionManager GetById(Guid id)
+    public ISessionManager? GetById(Guid id)
     {
-        return Storage[id];
+        return Storage.GetValueOrDefault(id);
     }
 
     public void Remove(Guid id)

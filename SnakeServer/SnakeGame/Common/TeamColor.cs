@@ -1,6 +1,6 @@
 ﻿namespace SnakeGame.Common;
 
-internal enum Team
+internal enum TeamColor
 {
     Red,
     Blue,

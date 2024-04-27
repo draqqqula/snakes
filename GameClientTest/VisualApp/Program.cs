@@ -18,14 +18,16 @@ var builder = new UriBuilder()
     Query = $"sessionId={sessionId}"
 };
 
+using var logStream = File.Create($"log_{sessionId}.txt");
 using var game = new VisualApp.GameApp();
 using (ClientWebSocket ws = new ClientWebSocket())
 {
     ws.Options.RemoteCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
     await ws.ConnectAsync(builder.Uri, CancellationToken.None);
-    var client = new GameClient(ws, game);
+    var client = new GameClient(ws, game, logStream);
 
     var sendTask = Task.Run(client.SendLoopAsync);
     var recieveTask = Task.Run(client.RecieveLoopAsync);
     game.Run();
 }
+logStream.Close();

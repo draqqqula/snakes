@@ -56,7 +56,7 @@ static async Task RecieveData(ISessionConnection connection)
     while (!connection.Closed)
     {
         var reader = await connection.GetOutputAsync<BinaryOutput>();
-        var output = reader?.Get() ?? new BinaryOutput() { Data = new byte[1] };
+        var output = new BinaryOutput() { Data = new byte[1] };
         Console.WriteLine(output.Data.Length);
     }
 }

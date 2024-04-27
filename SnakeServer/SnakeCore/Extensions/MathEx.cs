@@ -77,6 +77,11 @@ public static class MathEx
 
     public static float RotateTowards(this float angle, float targetAngle, float border, float speed)
     {
+        if (angle == targetAngle)
+        {
+            return angle;
+        }
+
         float shortestDifference = angle.GetShortestDifferenceTo(targetAngle, border);
 
         // Calculate the step to rotate by, based on the speed

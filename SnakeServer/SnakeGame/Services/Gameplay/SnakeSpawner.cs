@@ -10,9 +10,10 @@ using System.Numerics;
 
 namespace SnakeGame.Services.Gameplay;
 
-internal class PlayerSpawnerService(
+internal class SnakeSpawner(
     CharacterFabric Fabric,  
-    Dictionary<ClientIdentifier, SnakeCharacter> Players) : 
+    Dictionary<ClientIdentifier, SnakeCharacter> Players,
+    Dictionary<Guid, TilePickup> Pickups) : 
     ISessionService, IInputService<MovementDirectionInput>, IOutputService<FrameDisplayOutput>
 {
 
@@ -32,6 +33,16 @@ internal class PlayerSpawnerService(
 
     public void OnLeave(IGameContext context, ClientIdentifier id)
     {
+        var snake = Players[id];
+        foreach (var part in snake.Body)
+        {
+            Pickups.Add(Guid.NewGuid(), new TilePickup() 
+            { 
+                Position = part.Position,
+                Rotation = part.Rotation,
+                Tier = part.Tier,
+            });
+        }
         Players.Remove(id);
     }
 
