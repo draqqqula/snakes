@@ -15,7 +15,14 @@ namespace SnakeGame.Mechanics.Collision.Resolvers
     {
         public bool IsColliding(RotatableSquare square1, RotatableSquare square2)
         {
-            if (Vector2.Distance(square1.Position, square2.Position) <= square1.Size/2 + square2.Size/2)
+            var distance = Vector2.Distance(square1.Position, square2.Position);
+
+            if (distance > square1.DiagonalLength/2 + square2.DiagonalLength/2)
+            {
+                return false;
+            }
+
+            if (distance <= square1.Size/2 + square2.Size/2)
             {
                 return true;
             }

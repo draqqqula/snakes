@@ -49,13 +49,20 @@ internal class SessionManager : ISessionManager
     }
     private static async Task LoopUpdateAsync(GameState state, SessionHandler handler)
     {
-        while (!handler.Closed)
+        try
         {
-            await handler.Semaphore.WaitAsync();
-            await Task.Delay(FixedTimeStep);
+            while (!handler.Closed)
+            {
+                await handler.Semaphore.WaitAsync();
+                await Task.Delay(FixedTimeStep);
 
-            state.Update(TimeSpan.FromMilliseconds(FixedTimeStep));
-            handler.Semaphore.Release();
+                state.Update(TimeSpan.FromMilliseconds(FixedTimeStep));
+                handler.Semaphore.Release();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Session closed due to unhandled exception \"{ex.Message}\"");
         }
     }
 }

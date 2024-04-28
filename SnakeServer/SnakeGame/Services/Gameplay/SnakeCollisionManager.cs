@@ -10,75 +10,78 @@ namespace SnakeGame.Services.Gameplay;
 internal class SnakeCollisionManager
     (
     Dictionary<ClientIdentifier, SnakeCharacter> Players,
-    ICollisionResolver<RotatableSquare, RotatableSquare> collision,
+    ICollisionChecker collision,
     CharacterFabric fabric,
     Dictionary<Guid, TilePickup> Pickups
     ) : IUpdateService
 {
     public void Update(IGameContext context)
     {
-        foreach (var player1 in Players.Values)
+        foreach (var master in Players.Values)
         {
-            if (player1.Body.Count == 0)
+            foreach (var slave in Players.Values.Except([master]))
+            {
+                Interact(master, slave);
+            }
+        }
+        foreach (var snake in Players)
+        {
+            if (snake.Value.Body.Count == 0)
+            {
+                Players[snake.Key] = fabric.CreateCharacter();
+            }
+        }
+    }
+
+    public void Interact(SnakeCharacter master, SnakeCharacter slave)
+    {
+        if (master.Body.Count == 0 || slave.Body.Count == 0)
+        {
+            return;
+        }
+
+        var masterTier = master.Body.Select(it => it.Tier).Max();
+        foreach (var (segment, index) in slave.Body.Select((i, it) => (i, it)))
+        {
+            if (!collision.IsColliding(master, segment))
             {
                 continue;
             }
-            foreach (var player2 in Players.Values.Except([player1]))
+
+            if (masterTier >= segment.Tier)
             {
-                if (player2.Body.Count == 0)
-                {
-                    continue;
-                }
-                var collapse = false;
-                foreach (var part in player1.Body.ToArray())
-                {
-                    if (collapse)
-                    {
-                        player1.Body.Remove(part);
-                        Pickups.Add(Guid.NewGuid(), new TilePickup() 
-                        {
-                            Position = part.Position,
-                            Rotation = part.Rotation,
-                            Tier = part.Tier,
-                        });
-                        continue;
-                    }
-                    if (player2.GetBody().Any(it => collision.IsColliding(new RotatableSquare()
-                    {
-                        Position = part.Position,
-                        Rotation = part.Rotation,
-                        Size = 4 },
-                        it)))
-                    {
-                        if (part.Tier > player2.Body.Select(it => it.Tier).Max())
-                        {
-                            foreach (var part2 in player2.Body)
-                            {
-                                Pickups.Add(Guid.NewGuid(), new TilePickup()
-                                {
-                                    Position = part.Position,
-                                    Rotation = part.Rotation,
-                                    Tier = part.Tier,
-                                });
-                            }
-                            player2.Body.Clear();
-                        }
-                        else
-                        {
-                            player2.JoinPart(part.Tier);
-                            player1.Body.Remove(part);
-                            collapse = true;
-                        }
-                    }
-                }
+                CollapseBody(master, 0);
+                return;
+            }
+            if (masterTier <= segment.Tier)
+            {
+                CollapseBody(slave, index);
+                return;
             }
         }
-        foreach (var player in Players)
+    }
+
+    private void SpawnPickup(SnakeBodypart segment)
+    {
+        Pickups.Add(Guid.NewGuid(), new TilePickup()
         {
-            if (player.Value.Body.Count == 0)
-            {
-                Players[player.Key] = fabric.CreateCharacter();
-            }
+            Position = segment.Position,
+            Rotation = segment.Rotation,
+            Tier = segment.Tier,
+        });
+    }
+
+    private void CollapseBody(SnakeCharacter character, int start)
+    {
+        if (start >= character.Body.Count)
+        {
+            return;
+        }
+        var collapsed = character.Body.Skip(start);
+        foreach ( var item in collapsed)
+        {
+            SpawnPickup(item);
+            character.Body.Remove(item);
         }
     }
 }

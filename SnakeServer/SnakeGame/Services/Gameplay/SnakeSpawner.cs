@@ -60,6 +60,14 @@ internal class SnakeSpawner(
                     Scale = System.Numerics.Vector2.One
                 };
             }
+
+            yield return new FrameDisplayOutput()
+            {
+                Name = "head",
+                Position = character.Head.Position,
+                Rotation = character.Head.Rotation,
+                Scale = Vector2.One
+            };
         }
     }
 }

@@ -5,6 +5,7 @@ using SnakeCore.Extensions;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Models.Input.Internal;
 using System.Numerics;
+using SnakeGame.Mechanics.Collision.Shapes;
 
 namespace SnakeGame.Services.Gameplay;
 
@@ -20,6 +21,13 @@ internal class SnakeMovementManager(Dictionary<ClientIdentifier, SnakeCharacter>
 
             var direction = new Vector2(MathF.Cos(player.Rotation), MathF.Sin(player.Rotation));
             var distance = player.Speed * direction * context.DeltaTime;
+
+            player.Head = new RotatableSquare()
+            {
+                Position = player.Position + direction * MaxTrailLength,
+                Size = 4,
+                Rotation = player.Rotation,
+            };
 
             var transitSegment = new SnakeTrailSegment()
             {

@@ -51,6 +51,15 @@ namespace VisualApp
             Semaphore.Wait();
             var mouseState = Mouse.GetState();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Q))
+            {
+                ScaleFactor += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.E))
+            {
+                ScaleFactor -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 if (!Joystick.Active)
@@ -76,6 +85,7 @@ namespace VisualApp
             base.Update(gameTime);
         }
 
+        private float ScaleFactor = 1;
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -85,7 +95,7 @@ namespace VisualApp
             foreach (var frame in buffer)
             {
                 var texture = Content.Load<Texture2D>(frame.Name);
-                _spriteBatch.Draw(texture, frame.Position + new Vector2(Window.ClientBounds.Width/2, Window.ClientBounds.Height/2), null, Color.White, frame.Rotation, texture.Bounds.Center.ToVector2(), frame.Scale, SpriteEffects.None, 0);
+                _spriteBatch.Draw(texture, frame.Position * ScaleFactor + new Vector2(Window.ClientBounds.Width/2, Window.ClientBounds.Height/2), null, Color.White, frame.Rotation, texture.Bounds.Center.ToVector2(), frame.Scale * ScaleFactor * 0.5f, SpriteEffects.None, 0);
             }
 
             if (Joystick.Active)

@@ -29,8 +29,8 @@ internal class GameClient(WebSocket webSocket, GameApp game, FileStream log)
             };
             var stream = new MemoryStream();
             var capacity = BitConverter.ToInt32(buffer.Take(8).ToArray());
-            log.Write(Encoding.UTF8.GetBytes($"\n{counter}"));
-            log.Write(buffer, 8, capacity);
+            //log.Write(Encoding.UTF8.GetBytes($"\n{counter}"));
+            //log.Write(buffer, 8, capacity);
             stream.Write(buffer, 8, capacity);
             stream.Position = 0;
             var pool = await JsonSerializer.DeserializeAsync<FrameDisplayForm[]>(stream, options);

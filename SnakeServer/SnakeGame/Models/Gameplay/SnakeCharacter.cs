@@ -19,6 +19,12 @@ internal record SnakeCharacter : IBodyComponent<RotatableSquare>
                 { 
                     Position = Position, Rotation = Rotation
                 }];
+        Head = new RotatableSquare()
+        {
+            Position = Position,
+            Rotation = Rotation,
+            Size = Size
+        };
     }
 
     public void JoinPart(byte tier)
@@ -77,13 +83,14 @@ internal record SnakeCharacter : IBodyComponent<RotatableSquare>
     public float Rotation { get; set; } = 0f;
     public float Speed { get; set; } = 0.05f;
     public List<SnakeBodypart> Body { get; } = [];
+    public RotatableSquare Head { get; set; } 
     public IEnumerable<RotatableSquare> GetBody()
     {
         yield return new RotatableSquare()
         {
-            Position = Position,
-            Rotation = Rotation,
-            Size = Size,
+            Position = Head.Position,
+            Rotation = Head.Rotation,
+            Size = Head.Size,
         };
     }
 }
