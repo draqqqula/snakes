@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ServerEngine.Interfaces;
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
+using SnakeGame.Common;
 using SnakeGame.Mechanics.Collision;
 using SnakeGame.Mechanics.Collision.Resolvers;
 using SnakeGame.Mechanics.Collision.Shapes;
@@ -21,6 +22,7 @@ public class GameLauncher : ISessionLauncher
 {
     public void Prepare(IServiceCollection services)
     {
+        services.AddSingleton<Dictionary<TeamColor, TeamContext>>();
         services.AddSingleton<Dictionary<Guid, TilePickup>>();
         services.AddSingleton<Dictionary<ClientIdentifier, SnakeCharacter>>();
 
@@ -28,6 +30,22 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox>, AABBToAABBResolver>();
         services.AddSingleton<ICollisionResolver<RotatableSquare, RotatableSquare>, RSquareToRSquareResolver>();
         services.AddSingleton<ICollisionChecker, CollisionChecker>();
+
+        services.AddSingleton(new MatchConfiguration()
+        {
+            Duration = TimeSpan.FromMinutes(10),
+            ScoreToWin = 2048,
+            TeamSize = 4,
+            Mode = GameMode.Quad
+        });
+        services.AddSingleton<MatchManager>();
+        services.AddSingleton<IUpdateService>(it => it.GetRequiredService<MatchManager>());
+        services.AddSingleton<IStartUpService>(it => it.GetRequiredService<MatchManager>());
+        services.AddSingleton<ISessionService>(it => it.GetRequiredService<MatchManager>());
+
+        services.AddSingleton<AreaManager>();
+        services.AddSingleton<IOutputService<FrameDisplayOutput>>(it => it.GetRequiredService<AreaManager>());
+        services.AddSingleton<IUpdateService>(it => it.GetRequiredService<AreaManager>());
 
         services.AddSingleton<CharacterFabric, CharacterFabricA>();
         services.AddSingleton<SnakeSpawner>();

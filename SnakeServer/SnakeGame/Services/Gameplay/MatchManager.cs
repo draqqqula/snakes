@@ -3,20 +3,32 @@ using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
 using SnakeGame.Common;
 using SnakeGame.Models.Gameplay;
+using System.Numerics;
 
 namespace SnakeGame.Services.Gameplay;
 
-internal class MatchManager(MatchConfiguration Configuration) : IUpdateService, IStartUpService, ISessionService
+internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamColor, TeamContext> Teams) : IUpdateService, IStartUpService, ISessionService
 {
+    private readonly Vector2[] Locations = 
+        [ 
+        Vector2.One * 100, 
+        Vector2.One * -100, 
+        Vector2.UnitX * 100 + Vector2.UnitY * -100, 
+        Vector2.UnitX * -100 + Vector2.UnitY * 100
+        ];
+
     private bool MatchEnded { get; set; } = false;
     private TimeSpan Timer { get; set; } = TimeSpan.Zero;
-    private Dictionary<TeamColor, TeamContext> Teams { get; } = [];
 
     private void AddTeams(params TeamColor[] colors)
     {
-        foreach (var color in colors)
+        foreach (var (color, index) in colors.Select((it, i) => (it, i)))
         {
-            Teams.Add(color, new TeamContext());
+            var area = new TeamArea()
+            {
+                Center = Locations[index]
+            };
+            Teams.Add(color, new TeamContext(area));
         }
     }
 
