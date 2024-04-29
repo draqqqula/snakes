@@ -60,6 +60,23 @@ namespace VisualApp
                 ScaleFactor -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {
+                CameraPosition += Vector2.UnitX * (float)gameTime.ElapsedGameTime.TotalSeconds * ScaleFactor * 50;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
+            {
+                CameraPosition += Vector2.UnitY * (float)gameTime.ElapsedGameTime.TotalSeconds * ScaleFactor * 50;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                CameraPosition -= Vector2.UnitX * (float)gameTime.ElapsedGameTime.TotalSeconds * ScaleFactor * 50;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                CameraPosition -= Vector2.UnitY * (float)gameTime.ElapsedGameTime.TotalSeconds * ScaleFactor * 50 ;
+            }
+
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 if (!Joystick.Active)
@@ -85,6 +102,7 @@ namespace VisualApp
             base.Update(gameTime);
         }
 
+        private Vector2 CameraPosition = Vector2.Zero;
         private float ScaleFactor = 1;
         protected override void Draw(GameTime gameTime)
         {
@@ -95,8 +113,8 @@ namespace VisualApp
             foreach (var frame in buffer)
             {
                 var texture = Content.Load<Texture2D>(frame.Name);
-                _spriteBatch.Draw(texture, frame.Position * ScaleFactor + new Vector2(Window.ClientBounds.Width/2, Window.ClientBounds.Height/2), null, Color.White, frame.Rotation, texture.Bounds.Center.ToVector2(), frame.Scale * ScaleFactor * 0.5f, SpriteEffects.None, 0);
-            }
+                _spriteBatch.Draw(texture, (frame.Position + CameraPosition) * ScaleFactor + new Vector2(Window.ClientBounds.Width/2, Window.ClientBounds.Height/2), null, Color.White, frame.Rotation, texture.Bounds.Center.ToVector2(), (frame.Scale * ScaleFactor) / texture.Bounds.Size.ToVector2(), SpriteEffects.None, 0);
+            } 
 
             if (Joystick.Active)
             {

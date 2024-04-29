@@ -12,7 +12,7 @@ namespace SnakeGame.Services.Gameplay;
 internal class PickupSpawner(
     Dictionary<ClientIdentifier, SnakeCharacter> Players, 
     ICollisionChecker CollisionChecker,
-    Dictionary<Guid, TilePickup> Pickups
+    List<PickupPoints> Pickups
     ) : 
     IUpdateService, IOutputService<FrameDisplayOutput>
 {
@@ -26,10 +26,10 @@ internal class PickupSpawner(
         {
             yield return new FrameDisplayOutput()
             {
-                Name = $"pickup{tile.Value.Tier}",
-                Position = tile.Value.Position,
-                Rotation = tile.Value.Rotation,
-                Scale = Vector2.One
+                Name = $"pickup{tile.Tier}",
+                Position = tile.Position,
+                Rotation = tile.Rotation,
+                Scale = Vector2.One * 4
             };
         }
     }
@@ -38,13 +38,13 @@ internal class PickupSpawner(
     {
         foreach (var player in Players)
         {
-            foreach (var tile in Pickups.ToArray())
+            foreach (var tile in Pickups.Where(it => it.Claim != player.Value.Team).ToArray())
             {
-                if (CollisionChecker.IsColliding(player.Value, tile.Value))
+                if (CollisionChecker.IsColliding(player.Value, tile))
                 {
-                    tile.Value.Rotation += context.DeltaTime;
-                    Pickups.Remove(tile.Key);
-                    player.Value.JoinPart(tile.Value.Tier);
+                    tile.Rotation += context.DeltaTime;
+                    Pickups.Remove(tile);
+                    player.Value.JoinPart(tile.Tier);
                 }
             }
         }
@@ -55,13 +55,13 @@ internal class PickupSpawner(
         {
             for (int i = 0; i < Math.Min(6, MaxPickups-Pickups.Count); i++)
             {
-                var tile = new TilePickup()
+                var tile = new PickupPoints()
                 {
                     Position = new Vector2(Random.Shared.NextSingle() - 0.5f, Random.Shared.NextSingle() - 0.5f) * 500,
                     Rotation = Random.Shared.NextSingle() * MathF.PI,
                     Tier = (byte)Random.Shared.Next(0, 2)
                 };
-                Pickups.Add(Guid.NewGuid(), tile);
+                Pickups.Add(tile);
                 Time = 0f;
             }
         }

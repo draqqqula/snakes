@@ -9,12 +9,13 @@ namespace SnakeGame.Services.Gameplay;
 
 internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamColor, TeamContext> Teams) : IUpdateService, IStartUpService, ISessionService
 {
+    private const float AreaDistance = 200;
     private readonly Vector2[] Locations = 
         [ 
-        Vector2.One * 100, 
-        Vector2.One * -100, 
-        Vector2.UnitX * 100 + Vector2.UnitY * -100, 
-        Vector2.UnitX * -100 + Vector2.UnitY * 100
+            new Vector2(1, 1) * AreaDistance,
+            new Vector2(-1, -1) * AreaDistance,
+            new Vector2(1, -1) * AreaDistance,
+            new Vector2(-1, 1) * AreaDistance
         ];
 
     private bool MatchEnded { get; set; } = false;

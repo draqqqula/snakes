@@ -23,7 +23,7 @@ public class GameLauncher : ISessionLauncher
     public void Prepare(IServiceCollection services)
     {
         services.AddSingleton<Dictionary<TeamColor, TeamContext>>();
-        services.AddSingleton<Dictionary<Guid, TilePickup>>();
+        services.AddSingleton<List<PickupPoints>>();
         services.AddSingleton<Dictionary<ClientIdentifier, SnakeCharacter>>();
 
         services.AddSingleton<ICollisionResolver<Polygon, Polygon>, PolygonToPolygonResolver>();
