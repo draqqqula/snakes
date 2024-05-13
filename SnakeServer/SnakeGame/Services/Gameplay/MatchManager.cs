@@ -2,12 +2,14 @@
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
 using SnakeGame.Common;
+using SnakeGame.Mechanics.Bodies;
+using SnakeGame.Mechanics.Frames;
 using SnakeGame.Models.Gameplay;
 using System.Numerics;
 
 namespace SnakeGame.Services.Gameplay;
 
-internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamColor, TeamContext> Teams) : IUpdateService, IStartUpService, ISessionService
+internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamColor, TeamContext> Teams, FrameFactory Factory) : IUpdateService, IStartUpService, ISessionService
 {
     private const float AreaDistance = 200;
     private readonly Vector2[] Locations = 
@@ -27,7 +29,12 @@ internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamCol
         {
             var area = new TeamArea()
             {
-                Center = Locations[index]
+                Transform = Factory.Create("area", new Transform()
+                {
+                    Angle = 0f,
+                    Position = Locations[index],
+                    Size = Vector2.One * 40f
+                }),
             };
             Teams.Add(color, new TeamContext(area));
         }

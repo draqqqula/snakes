@@ -6,6 +6,7 @@ using SnakeGame.Models.Gameplay;
 using SnakeGame.Models.Input.Internal;
 using System.Numerics;
 using SnakeGame.Mechanics.Collision.Shapes;
+using SnakeGame.Mechanics.Bodies;
 
 namespace SnakeGame.Services.Gameplay;
 
@@ -17,28 +18,24 @@ internal class SnakeMovementManager(Dictionary<ClientIdentifier, SnakeCharacter>
     {
         foreach (var player in Players.Values)
         {
-            player.Rotation = player.Rotation.RotateTowards(player.MovementDirection, MathF.PI*2, RotationSpeed, context.DeltaTime);
+            player.Transform.Angle = player.Transform.Angle.RotateTowards(player.MovementDirection, MathF.PI*2, RotationSpeed, context.DeltaTime);
 
-            var direction = new Vector2(MathF.Cos(player.Rotation), MathF.Sin(player.Rotation));
+            var direction = new Vector2(MathF.Cos(player.Transform.Angle), MathF.Sin(player.Transform.Angle));
             var distance = player.Speed * direction * context.DeltaTime;
 
-            player.Head = new RotatableSquare()
-            {
-                Position = player.Position + direction * MaxTrailLength,
-                Size = 4,
-                Rotation = player.Rotation,
-            };
+            player.Head.Transform.Position = player.Transform.Position + direction * MaxTrailLength;
+            player.Head.Transform.Angle = player.Transform.Angle;
 
             var transitSegment = new SnakeTrailSegment()
             {
                 DistanceTraveled = distance.Length(),
-                Position = player.Position,
-                Rotation = player.Rotation
+                Position = player.Transform.Position,
+                Rotation = player.Transform.Angle
             };
             foreach (var part in player.Body)
             {
-                part.Position = transitSegment.Position;
-                part.Rotation = transitSegment.Rotation;
+                part.Transform.Position = transitSegment.Position;
+                part.Transform.Angle = transitSegment.Rotation;
                 part.DistanceCounter += transitSegment.DistanceTraveled;
 
                 part.Trail.Enqueue(transitSegment);
@@ -52,7 +49,7 @@ internal class SnakeMovementManager(Dictionary<ClientIdentifier, SnakeCharacter>
                     transitSegment = part.Trail.First();
                 }
             }
-            player.Position += distance;
+            player.Transform.Position += distance;
         }
     }
 }

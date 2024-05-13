@@ -62,6 +62,7 @@ internal class SessionManager : ISessionManager
         }
         catch (Exception ex)
         {
+            
             Console.WriteLine($"Session closed due to unhandled exception \"{ex.Message}\"");
         }
     }

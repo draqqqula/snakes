@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace SnakeGame.Mechanics.Collision.Shapes;
 
-internal partial record struct RotatableSquare
+internal readonly partial record struct RotatableSquare : IFlatShape
 {
     public required Vector2 Position { get; init; }
     public required float Size { get; init; }
@@ -46,8 +46,74 @@ internal partial record struct RotatableSquare
     }
 }
 
-internal partial record struct RotatableSquare
+internal partial record struct RotatableSquare : IFlatShape
 {
+    public Vector2[] Vertexes =>
+    [
+        TopRight,
+        BottomRight,
+        BottomLeft,
+        TopLeft
+    ];
+    public Polygon AsPolygon()
+    {
+        Vector2[] edgeArray =
+            [
+                BottomRight - TopRight,
+                BottomLeft - BottomRight,
+                TopLeft - BottomLeft,
+                TopRight - TopLeft
+            ];
+        return new Polygon()
+        {
+            Edges = edgeArray.ToImmutableArray(),
+            Vertexes = Vertexes.ToImmutableArray()
+        };
+    }
+
+    public AxisAlignedBoundingBox GetBounds()
+    {
+        var minX = float.MaxValue;
+        var minY = float.MaxValue;
+        var maxX = float.MinValue;
+        var maxY = float.MinValue;
+
+        foreach (var vertex in Vertexes)
+        {
+            if (vertex.X < minX)
+            {
+                minX = vertex.X;
+            }
+            if (vertex.Y < minY)
+            {
+                minY = vertex.Y;
+            }
+            if (vertex.X > maxX)
+            {
+                maxX = vertex.X;
+            }
+            if (vertex.Y > maxY)
+            {
+                maxY = vertex.Y;
+            }
+        }
+
+        return new AxisAlignedBoundingBox()
+        {
+            Min = new Vector2(minX, minY),
+            Max = new Vector2(maxX, maxY)
+        };
+    }
+
+    public AxisAlignedBoundingBox GetUnrotated()
+    {
+        return new AxisAlignedBoundingBox()
+        {
+            Min = Position - Vector2.One * Size,
+            Max = Position + Vector2.One * Size
+        };
+    }
+
     struct RectangleVertexes
     {
         public Vector2 TopLeft;
@@ -64,40 +130,5 @@ internal partial record struct RotatableSquare
         float rotatedY = center.Y + distance * MathF.Sin(originalAngle + rotation);
 
         return new Vector2(rotatedX, rotatedY);
-    }
-
-    public static explicit operator Polygon(RotatableSquare square)
-    {
-        Vector2[] vertexArray = 
-            [ 
-                square.TopRight, 
-                square.BottomRight, 
-                square.BottomLeft, 
-                square.TopLeft 
-            ];
-        Vector2[] edgeArray =
-            [
-                square.BottomRight - square.TopRight,
-                square.BottomLeft - square.BottomRight,
-                square.TopLeft - square.BottomLeft,
-                square.TopRight - square.TopLeft
-            ];
-        return new Polygon() 
-        { 
-            Edges = edgeArray.ToImmutableArray(), 
-            Vertexes = vertexArray.ToImmutableArray()
-        };
-    }
-}
-
-internal partial record struct RotatableSquare
-{
-    public static explicit operator AxisAlignedBoundingBox(RotatableSquare square)
-    {
-        return new AxisAlignedBoundingBox()
-        {
-            Min = square.Position - Vector2.One * square.Size,
-            Max = square.Position + Vector2.One * square.Size
-        };
     }
 }

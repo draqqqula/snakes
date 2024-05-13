@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<FlatSharpSchema Include="Models/Output/Internal/schema.fbs" />
     <ProjectReference Include="..\..\ServerEngine\ServerEngine\ServerEngine.csproj" />
+    <ProjectReference Include="..\MessageSchemes\MessageSchemes.csproj" />
     <ProjectReference Include="..\SnakeCore\SnakeCore.csproj" />
   </ItemGroup>
 

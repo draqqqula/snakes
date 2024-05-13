@@ -1,6 +1,8 @@
 ﻿using SnakeGame.Common;
+using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Collision;
 using SnakeGame.Mechanics.Collision.Shapes;
+using SnakeGame.Mechanics.Frames;
 using SnakeGame.Models.Input.Internal;
 using System.Drawing;
 using System.Numerics;
@@ -8,28 +10,16 @@ using System.Text;
 
 namespace SnakeGame.Models.Gameplay;
 
-internal record SnakeCharacter : IBodyComponent<RotatableSquare>
+internal class SnakeCharacter : SquareBody
 {
-    public const float Size = 4;
-    public SnakeCharacter(Vector2 position, float direction, float speed)
-    {
-        Position = position;
-        MovementDirection = direction;
-        Rotation = direction;
-        Speed = speed;
-        Body = [new SnakeBodypart() 
-                { 
-                    Position = Position, Rotation = Rotation
-                }];
-        Head = new RotatableSquare()
-        {
-            Position = Position,
-            Rotation = Rotation,
-            Size = Size
-        };
-    }
+    public TeamColor Team { get; set; }
+    public float MovementDirection { get; set; } = 0f;
+    public float Speed { get; set; } = 40f;
+    public bool OnBase { get; set; } = false;
+    public required List<SnakeBodypart> Body { get; init; }
+    public required SquareBody Head { get; init; }
 
-    public void JoinPart(byte tier)
+    public void JoinPart(byte tier, FrameFactory factory)
     {
         if (InvokeReaction(tier))
         {
@@ -40,8 +30,7 @@ internal record SnakeCharacter : IBodyComponent<RotatableSquare>
         {
             Body.Insert(0, new SnakeBodypart()
             {
-                Position = Position,
-                Rotation = Rotation,
+                Transform = factory.Create($"body{tier}", Transform.ReadOnly),
                 Tier = tier
             });
             return;
@@ -49,13 +38,12 @@ internal record SnakeCharacter : IBodyComponent<RotatableSquare>
         var tail = frontElement.Trail.LastOrDefault(new SnakeTrailSegment()
         {
             DistanceTraveled = 0,
-            Position = frontElement.Position,
-            Rotation = frontElement.Rotation
+            Position = frontElement.Transform.Position,
+            Rotation = frontElement.Transform.Angle
         });
         Body.Insert(Body.IndexOf(frontElement) + 1, new SnakeBodypart() 
         { 
-            Position = tail.Position,
-            Rotation = tail.Rotation,
+            Transform = factory.Create($"body{tier}", Transform.ReadOnly),
             Tier = tier
         });
     }
@@ -74,32 +62,17 @@ internal record SnakeCharacter : IBodyComponent<RotatableSquare>
                 if (InvokeReaction((byte)(tier + 1)))
                 {
                     Body.Remove(part);
+                    part.Transform.Dispose();
                 }
                 else
                 {
                     part.Tier += 1;
+                    part.Transform.ChangeAsset($"body{part.Tier}");
                 }
                 return true;
             }
         }
         return false;
-    }
-    public TeamColor Team { get; set; }
-    public float MovementDirection { get; set; } = 0f;
-    public Vector2 Position { get; set; } = Vector2.Zero;
-    public float Rotation { get; set; } = 0f;
-    public float Speed { get; set; } = 0.05f;
-    public List<SnakeBodypart> Body { get; } = [];
-    public RotatableSquare Head { get; set; } 
-    public bool OnBase { get; set; } = false;
-    public IEnumerable<RotatableSquare> GetBody()
-    {
-        yield return new RotatableSquare()
-        {
-            Position = Head.Position,
-            Rotation = Head.Rotation,
-            Size = Head.Size,
-        };
     }
 
     public override string ToString()

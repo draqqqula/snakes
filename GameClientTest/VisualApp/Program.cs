@@ -11,7 +11,7 @@ using System.Net;
 var sessionId = File.ReadLines("sessionId.txt").First();
 var builder = new UriBuilder()
 {
-    Host = "26.181.15.68",
+    Host = "localhost",
     Scheme = "wss",
     Port = 7170,
     Path = "sessions",

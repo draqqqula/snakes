@@ -28,9 +28,9 @@ namespace SnakeGame.Mechanics.Collision.Resolvers
             }
             if (square1.Rotation % (MathF.PI/2) == 0 && square2.Rotation % (MathF.PI / 2) == 0)
             {
-                AABBResolver.IsColliding((AxisAlignedBoundingBox)square1, (AxisAlignedBoundingBox)square2);
+                AABBResolver.IsColliding(square1.GetUnrotated(), square2.GetUnrotated());
             }
-            return PolygonResolver.IsColliding((Polygon)square1, (Polygon)square2);
+            return PolygonResolver.IsColliding(square1.AsPolygon(), square2.AsPolygon());
         }
     }
 }

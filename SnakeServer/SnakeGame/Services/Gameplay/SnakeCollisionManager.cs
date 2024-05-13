@@ -3,7 +3,9 @@ using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
 using SnakeGame.Mechanics.Collision;
 using SnakeGame.Mechanics.Collision.Shapes;
+using SnakeGame.Mechanics.Frames;
 using SnakeGame.Models.Gameplay;
+using SnakeGame.Services.Gameplay.FrameDrivers;
 
 namespace SnakeGame.Services.Gameplay;
 
@@ -11,8 +13,9 @@ internal class SnakeCollisionManager
     (
     Dictionary<ClientIdentifier, SnakeCharacter> Players,
     ICollisionChecker collision,
-    CharacterFabric fabric,
-    List<PickupPoints> Pickups
+    List<PickupPoints> Pickups,
+    FrameFactory FrameFactory,
+    SnakeSpawner SnakeSpawner
     ) : IUpdateService
 {
     public void Update(IGameContext context)
@@ -28,7 +31,9 @@ internal class SnakeCollisionManager
         {
             if (snake.Value.Body.Count == 0)
             {
-                Players[snake.Key] = fabric.CreateCharacter();
+                snake.Value.Transform.Dispose();
+                snake.Value.Head.Transform.Dispose();
+                Players[snake.Key] = SnakeSpawner.Spawn(snake.Key);
             }
         }
     }
@@ -43,7 +48,7 @@ internal class SnakeCollisionManager
         var masterTier = master.Body.Select(it => it.Tier).Max();
         var slaveTier = slave.Body.Select(it => it.Tier).Max();
 
-        if (collision.IsColliding(master, slave))
+        if (collision.IsColliding(master.Head, slave))
         {
             Console.WriteLine($"Head Collision: master - {master} slave - {slave}");
             if (masterTier >= slaveTier)
@@ -88,8 +93,7 @@ internal class SnakeCollisionManager
     {
         Pickups.Add(new PickupPoints()
         {
-            Position = segment.Position,
-            Rotation = segment.Rotation,
+            Transform = FrameFactory.Create($"pickup{segment.Tier}", segment.Transform.ReadOnly),
             Tier = segment.Tier,
         });
     }
@@ -105,6 +109,7 @@ internal class SnakeCollisionManager
         {
             SpawnPickup(item);
             character.Body.Remove(item);
+            item.Transform.Dispose();
         }
     }
 }

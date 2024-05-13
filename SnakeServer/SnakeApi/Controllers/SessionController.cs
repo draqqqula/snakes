@@ -36,6 +36,9 @@ public class SessionController : ControllerBase
 
         var id = new ClientIdentifier();
         var connection = await session.ConnectAsync(id);
+
+        await SendInitialAsync(connection, webSocket, cancellationTokenSource);
+
         var recieveTask = Task.Run(() => RecieveInLoopAsync(connection, webSocket, cancellationTokenSource));
         await SendInLoopAsync(connection, webSocket, cancellationTokenSource);
     }
@@ -68,11 +71,15 @@ public class SessionController : ControllerBase
     {
         while (!webSocket.CloseStatus.HasValue)
         {
-            var output = await connection.GetOutputAsync<BinaryOutput>();
+            var output = await connection.GetOutputAsync<EventBasedBinaryOutput?>();
+            if (!output.HasValue)
+            {
+                continue;
+            }
             try
             {
                 await webSocket.SendAsync(
-                new ArraySegment<byte>(output.Data, 0, output.Data.Length),
+                new ArraySegment<byte>(output.Value.EventData, 0, output.Value.EventData.Length),
                 WebSocketMessageType.Binary,
                 true,
                 cts.Token);
@@ -85,6 +92,25 @@ public class SessionController : ControllerBase
         }
         if (!connection.Closed)
         {
+            connection.Dispose();
+        }
+    }
+
+    private static async Task SendInitialAsync(ISessionConnection connection, WebSocket webSocket,
+        CancellationTokenSource cts)
+    {
+        var output = await connection.GetOutputAsync<StateBasedBinaryOutput>();
+        try
+        {
+            await webSocket.SendAsync(
+            new ArraySegment<byte>(output.Data, 0, output.Data.Length),
+            WebSocketMessageType.Binary,
+            true,
+            cts.Token);
+        }
+        catch (WebSocketException ex)
+        {
+            cts.Cancel();
             connection.Dispose();
         }
     }

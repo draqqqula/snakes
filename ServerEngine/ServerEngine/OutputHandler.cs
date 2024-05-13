@@ -30,3 +30,14 @@ internal class OutputHandler<TCollect, TProvide>
         return new OutputMessage<TProvide>(reader);
     }
 }
+
+internal class OutputHandler<TProvide>
+    (
+    IOutputProvider<TProvide> reader
+    ) : OutputHandler
+{
+    public override OutputMessage CreateMessage()
+    {
+        return new OutputMessage<TProvide>(reader);
+    }
+}

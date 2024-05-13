@@ -16,7 +16,7 @@ namespace VisualApp
         public SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
         public MobileJoystick Joystick { get; set; } = new MobileJoystick();
         public ConcurrentQueue<Keys> PressedKeys { get; } = [];
-        public FrameDisplayForm[] DisplayBuffer { get; set; } = [];
+        public ConcurrentDictionary<int, FrameDisplayForm> DisplayBuffer { get; set; } = [];
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -109,11 +109,18 @@ namespace VisualApp
             GraphicsDevice.Clear(Color.CornflowerBlue);
             _spriteBatch.Begin();
 
-            var buffer = DisplayBuffer.ToArray();
+            var buffer = DisplayBuffer.Values.ToArray();
             foreach (var frame in buffer)
             {
-                var texture = Content.Load<Texture2D>(frame.Name);
-                _spriteBatch.Draw(texture, (frame.Position + CameraPosition) * ScaleFactor + new Vector2(Window.ClientBounds.Width/2, Window.ClientBounds.Height/2), null, Color.White, frame.Rotation, texture.Bounds.Center.ToVector2(), (frame.Scale * ScaleFactor) / texture.Bounds.Size.ToVector2(), SpriteEffects.None, 0);
+                try
+                {
+                    var texture = Content.Load<Texture2D>(frame.Name);
+                    _spriteBatch.Draw(texture, (frame.Position + CameraPosition) * ScaleFactor + new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2), null, Color.White, frame.Rotation, texture.Bounds.Center.ToVector2(), (frame.Scale * ScaleFactor) / texture.Bounds.Size.ToVector2(), SpriteEffects.None, 0);
+                }
+                catch (Exception ex)
+                {
+
+                }
             } 
 
             if (Joystick.Active)

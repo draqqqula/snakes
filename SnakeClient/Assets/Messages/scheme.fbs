@@ -1,0 +1,24 @@
+attribute "fs_serializer";
+
+namespace MessageSchemes;
+
+struct Vec2 {
+    x : float;
+    y : float;
+}
+
+table Message (fs_serializer) {
+    groups: [ Group ];
+}
+
+table Group {
+    frames: [ Frame ];
+    asset: string;
+}
+
+struct Frame {
+    position: Vec2;
+    size: Vec2;
+    angle: float;
+    id: int;
+}
