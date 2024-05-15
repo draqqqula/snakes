@@ -37,8 +37,6 @@ public class SessionController : ControllerBase
         var id = new ClientIdentifier();
         var connection = await session.ConnectAsync(id);
 
-        await SendInitialAsync<ViewPortBasedBinaryOutput>(connection, webSocket, it => it[id], cancellationTokenSource);
-
         var recieveTask = Task.Run(() => RecieveInLoopAsync(connection, webSocket, cancellationTokenSource));
         await SendInLoopAsync<ViewPortBasedBinaryOutput>(connection, webSocket, it => it[id], cancellationTokenSource);
     }

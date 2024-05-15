@@ -11,21 +11,25 @@ internal class ClientViewHandler
     public EventTable OutsideScreen { get; private set; } = new EventTable();
     public EventTable ToSleep { get; private set; } = new EventTable();
 
-    private List<(EventTable, EventTable)> Log = [];
+    private bool CheckLoaded(int id, EventEntry entry, HashSet<int> viewed)
+    {
+        return viewed.Contains(id) ||
+        (entry.Lifecycle == EventLifecycle.Dispose && ClientInactive.Contains(id));
+    }
 
     public void ApplyEvents(EventTable global, HashSet<int> visible)
     {
-        var (globalInclude, globalExclude) = global.Split((id, entry) => visible.Contains(id) || 
-        (entry.Lifecycle == EventLifecycle.Dispose && ClientInactive.Contains(id)));
+        var loadCondition = (int id, EventEntry entry) => CheckLoaded(id, entry, visible);
 
-        var (localInclude, localExclude) = OutsideScreen.Split((id, _) => visible.Contains(id));
+        var (globalInclude, globalExclude) = global.Split(loadCondition);
 
-        // ToSleep = GetSleeping(globalExclude, globalInclude);
+        var (localInclude, localExclude) = OutsideScreen.Split(loadCondition);
+
+        ToSleep = GetSleeping(globalExclude, globalInclude);
 
         OutsideScreen = localExclude.Join(globalExclude);
         OnScreen = localInclude.Join(globalInclude);
-
-        Log.Add((OutsideScreen, OnScreen));
+        ClientPicture = ClientPicture.Join(OnScreen);
     }
 
     private EventTable GetSleeping(EventTable globalExclude, EventTable globalInclude)

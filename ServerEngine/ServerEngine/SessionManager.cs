@@ -27,8 +27,6 @@ internal class SessionManager : ISessionManager
     public async Task<ISessionConnection> ConnectAsync(ClientIdentifier id)
     {
         _handler.JoinQueue.Enqueue(id);
-        await _handler.Semaphore.WaitAsync();
-        _handler.Semaphore.Release();
         return new SessionConnection(_handler, id);
     }
 
