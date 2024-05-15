@@ -35,7 +35,7 @@ internal class ViewOutputService(ViewPortManager Manager, FrameStorage Storage, 
             yield return new ClientEventSet()
             {
                 Id = viewSet.Key,
-                Table = handler.OnScreen
+                Table = handler.OnScreen.Join(handler.ToSleep)
             };
         }
     }

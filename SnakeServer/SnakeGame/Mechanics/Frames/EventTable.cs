@@ -10,6 +10,8 @@ namespace SnakeGame.Mechanics.Frames;
 internal class EventTable
 {
     private Dictionary<int, EventEntry> _data = [];
+
+    public int Count => _data.Count;
     public EventMessage Serialize()
     {
         var created = new List<FrameInfo>();
@@ -110,17 +112,23 @@ internal class EventTable
     }
     public EventTable Join(EventTable other)
     {
+        var selfOuter = other._data
+            .ExceptBy(_data.Keys, it => it.Key)
+            .Select(it => KeyValuePair.Create(it.Key, it.Value.Clone()));
+        var otherOuter = _data
+            .ExceptBy(other._data.Keys, it => it.Key)
+            .Select(it => KeyValuePair.Create(it.Key, it.Value.Clone()));
+        var inner = this._data
+            .Join(other._data,
+            it => it.Key,
+            it => it.Key,
+            (older, newer) => KeyValuePair.Create(older.Key, older.Value.Join(newer.Value)))
+            .Where(it => it.Value.IsValid);
         return new EventTable()
         {
-            _data = this._data
-            .Join(other._data, 
-            it => it.Key, 
-            it => it.Key, 
-            (older, newer) => KeyValuePair.Create(older.Key, older.Value.Join(newer.Value)))
-            .Where(it => it.Value.IsValid)
-            .Concat(
-                other._data.ExceptBy(_data.Keys, it => it.Key)
-                .Union(_data.ExceptBy(other._data.Keys, it => it.Key)))
+            _data = inner
+            .Concat(selfOuter)
+            .Concat(otherOuter)
             .ToDictionary()
         };
     }
@@ -152,11 +160,11 @@ internal class EventTable
         {
             if (condition(entry.Key, entry.Value))
             {
-                include.Add(entry.Key, entry.Value);
+                include.Add(entry.Key, entry.Value.Clone());
             }
             else
             {
-                exclude.Add(entry.Key, entry.Value);
+                exclude.Add(entry.Key, entry.Value.Clone());
             }
         }
         var includeTable = new EventTable()
@@ -175,9 +183,9 @@ internal class EventTable
         var include = new Dictionary<int, EventEntry>();
         foreach (var entry in _data)
         {
-            if (condition(entry.Key, entry.Value))
+            if (condition(entry.Key, entry.Value.Clone()))
             {
-                include.Add(entry.Key, entry.Value);
+                include.Add(entry.Key, entry.Value.Clone());
             }
         }
         var includeTable = new EventTable()
@@ -185,6 +193,20 @@ internal class EventTable
             _data = include,
         };
         return includeTable;
+    }
+
+    public EventTable Select(Action<EventEntry> func)
+    {
+        return new EventTable()
+        {
+            _data = _data.Select(it =>
+            {
+                var cloned = it.Value.Clone();
+                func(cloned);
+                return KeyValuePair.Create(it.Key, cloned);
+            })
+            .ToDictionary(),
+        };
     }
 
     public static EventTable FromState(IEnumerable<TransformInfo> state)
@@ -262,14 +284,19 @@ internal class EventEntry
 
     public void AddAction(EventLifecycle action)
     {
-        if (action == EventLifecycle.Dispose)
-        {
-            Asset = null;
-            Position = null;
-            Angle = null;
-            Size = null;
-        }
         Lifecycle = ResolveLifecycle(this.Lifecycle, action);
+    }
+
+    public EventEntry Clone()
+    {
+        return new EventEntry()
+        {
+            Lifecycle = Lifecycle,
+            Angle = Angle,
+            Asset = Asset,
+            Position = Position,
+            Size = Size,
+        };
     }
 
     private EventLifecycle ResolveLifecycle(EventLifecycle first, EventLifecycle second)
@@ -284,7 +311,7 @@ internal class EventEntry
         {
             return EventLifecycle.Renew;
         }
-        else if ((second == EventLifecycle.Update || second == EventLifecycle.Sleep) && first != EventLifecycle.Cancel)
+        else if (second == EventLifecycle.Update && first != EventLifecycle.Cancel)
         {
             return first;
         }

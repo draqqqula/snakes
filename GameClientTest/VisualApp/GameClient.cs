@@ -17,6 +17,9 @@ namespace VisualApp;
 
 internal class GameClient(WebSocket webSocket, GameApp game, FileStream log)
 {
+    private EventMessage LastMessage;
+    volatile GameApp app = game;
+    private volatile int Counter = 0;
     public async Task RecieveLoopAsync()
     {
         try
@@ -30,19 +33,21 @@ internal class GameClient(WebSocket webSocket, GameApp game, FileStream log)
                 var capacity = BitConverter.ToInt32(buffer.Take(8).ToArray());
 
                 var message = EventMessage.Serializer.Parse(new MemoryInputBuffer(buffer.AsMemory(4, capacity)));
-                ApplyMessage(message);
                 counter++;
+                Counter = counter;
+                ApplyMessage(message);
             }
         }
         catch
         (Exception ex)
         {
-            Console.WriteLine(ex.ToString());
+            Console.WriteLine(LastMessage.ToString().Concat(app.DisplayBuffer.ToString()).Concat(Counter.ToString()));
         }
     }
 
     private void ApplyMessage(EventMessage message)
     {
+        LastMessage = message;
         var created = message.Created?
                 .Select(
                 group => group.Frames.Select(it => FrameDisplayForm.FromMessage(it, group.Asset))
