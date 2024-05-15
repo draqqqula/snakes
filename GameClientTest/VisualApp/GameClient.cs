@@ -20,6 +20,7 @@ internal class GameClient(WebSocket webSocket, GameApp game, FileStream log)
     private EventMessage LastMessage;
     volatile GameApp app = game;
     private volatile int Counter = 0;
+    private volatile List<EventMessage> Log = [];
     public async Task RecieveLoopAsync()
     {
         try
@@ -36,6 +37,7 @@ internal class GameClient(WebSocket webSocket, GameApp game, FileStream log)
                 counter++;
                 Counter = counter;
                 ApplyMessage(message);
+                Log.Add(message);
             }
         }
         catch

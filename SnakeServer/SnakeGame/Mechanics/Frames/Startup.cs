@@ -18,7 +18,7 @@ internal static class Startup
         services.AddSingleton<FrameRepository>();
         services.AddSingleton<INotificationListener>(provider => provider.GetRequiredService<FrameRepository>());
         services.AddSingleton<IMessageProvider>(provider => provider.GetRequiredService<FrameRepository>());
-        services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<FrameRepository>());
+        //services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<FrameRepository>());
         services.AddSingleton<FrameFactory>();
 
         services.AddSingleton<IOutputService<EventMessage>, EventOutputService>();

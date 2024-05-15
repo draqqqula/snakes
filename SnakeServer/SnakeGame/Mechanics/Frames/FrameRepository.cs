@@ -65,7 +65,9 @@ internal class FrameRepository(FrameStorage Storage) : INotificationListener, IM
 
     public EventTable Take()
     {
-        return Table;
+        var saved = Table;
+        Table = new EventTable();
+        return saved;
     }
 
     public void Update(IGameContext context)
