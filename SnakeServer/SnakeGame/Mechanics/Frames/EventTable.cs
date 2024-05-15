@@ -14,6 +14,7 @@ internal class EventTable
     {
         var created = new List<FrameInfo>();
         var disposed = new List<int>();
+        var sleep = new List<int>();
         var positionEvents = new List<PositionEvent>();
         var sizeEvents = new List<SizeEvent>();
         var angleEvents = new List<AngleEvent>();
@@ -23,8 +24,8 @@ internal class EventTable
         {
             if (row.Value.Lifecycle == EventLifecycle.Create || row.Value.Lifecycle == EventLifecycle.Renew)
             {
-                created.Add(new FrameInfo() 
-                { 
+                created.Add(new FrameInfo()
+                {
                     Asset = row.Value.Asset ?? "error",
                     Frame = new Frame()
                     {
@@ -39,8 +40,12 @@ internal class EventTable
             {
                 disposed.Add(row.Key);
             }
-            else if (row.Value.Lifecycle == EventLifecycle.Update)
+            else if (row.Value.Lifecycle == EventLifecycle.Update || row.Value.Lifecycle == EventLifecycle.Sleep)
             {
+                if (row.Value.Lifecycle == EventLifecycle.Sleep)
+                {
+                    sleep.Add(row.Key);
+                }
                 if (row.Value.Position.HasValue)
                 {
                     positionEvents.Add(new PositionEvent()
@@ -79,6 +84,7 @@ internal class EventTable
             SizeEvents = GetList(sizeEvents),
             PositionEvents = GetList(positionEvents),
             Disposed = GetList(disposed),
+            Sleep = GetList(sleep),
 
             Created = GetList(created
             .GroupBy(it => it.Asset)
@@ -112,8 +118,16 @@ internal class EventTable
             it => it.Key, 
             (older, newer) => KeyValuePair.Create(older.Key, older.Value.Join(newer.Value)))
             .Where(it => it.Value.IsValid)
+            .Concat(
+                other._data.ExceptBy(_data.Keys, it => it.Key)
+                .Union(_data.ExceptBy(other._data.Keys, it => it.Key)))
             .ToDictionary()
         };
+    }
+
+    public bool Contains(int id)
+    {
+        return _data.ContainsKey(id) && _data[id].IsValid;
     }
 
     public EventEntry this[int id]
@@ -130,7 +144,7 @@ internal class EventTable
         }
     }
 
-    public DivisionResult<EventTable> Divide(Func<int, EventEntry, bool> condition)
+    public (EventTable, EventTable) Split(Func<int, EventEntry, bool> condition)
     {
         var include = new Dictionary<int, EventEntry>();
         var exclude = new Dictionary<int, EventEntry>();
@@ -153,10 +167,42 @@ internal class EventTable
         {
             _data = exclude,
         };
-        return new DivisionResult<EventTable>()
+        return (includeTable, excludeTable);
+    }
+
+    public EventTable Where(Func<int, EventEntry, bool> condition)
+    {
+        var include = new Dictionary<int, EventEntry>();
+        foreach (var entry in _data)
         {
-            Include = includeTable,
-            Exclude = excludeTable
+            if (condition(entry.Key, entry.Value))
+            {
+                include.Add(entry.Key, entry.Value);
+            }
+        }
+        var includeTable = new EventTable()
+        {
+            _data = include,
+        };
+        return includeTable;
+    }
+
+    public static EventTable FromState(IEnumerable<TransformInfo> state)
+    {
+        return new EventTable()
+        {
+            _data = state.ToDictionary(it => it.Id, it =>
+            {
+                var entry = new EventEntry()
+                {
+                    Asset = it.Asset,
+                    Angle = it.Transform.Angle,
+                    Position = it.Transform.Position,
+                    Size = it.Transform.Size
+                };
+                entry.AddAction(EventLifecycle.Create);
+                return entry;
+            })
         };
     }
 }
@@ -178,13 +224,15 @@ internal class EventEntry
             Angle.HasValue ||
             Angle.HasValue))
         ||
-        ((Lifecycle == EventLifecycle.Create || Lifecycle == EventLifecycle.Renew) && 
+        ((Lifecycle == EventLifecycle.Create || Lifecycle == EventLifecycle.Renew) &&
             (Asset is not null &&
             Position.HasValue &&
             Angle.HasValue &&
             Size.HasValue))
         ||
         Lifecycle == EventLifecycle.Dispose
+        ||
+        Lifecycle == EventLifecycle.Sleep
         );
 
     public EventEntry Join(EventEntry other)
@@ -199,16 +247,29 @@ internal class EventEntry
         };
     }
 
-    public void SetAction(EventLifecycle cycle)
+    public override bool Equals(object? obj)
     {
-        if (cycle == EventLifecycle.Dispose)
+        if (obj is not null && obj is EventEntry other)
+        {
+            return this.Position == other.Position &&
+                this.Angle == other.Angle &&
+                this.Size == other.Size &&
+                this.Asset == other.Asset &&
+                this.Lifecycle == other.Lifecycle;
+        }
+        return false;
+    }
+
+    public void AddAction(EventLifecycle action)
+    {
+        if (action == EventLifecycle.Dispose)
         {
             Asset = null;
             Position = null;
             Angle = null;
             Size = null;
         }
-        Lifecycle = ResolveLifecycle(this.Lifecycle, cycle);
+        Lifecycle = ResolveLifecycle(this.Lifecycle, action);
     }
 
     private EventLifecycle ResolveLifecycle(EventLifecycle first, EventLifecycle second)
@@ -223,7 +284,7 @@ internal class EventEntry
         {
             return EventLifecycle.Renew;
         }
-        else if (second == EventLifecycle.Update && first != EventLifecycle.Cancel)
+        else if ((second == EventLifecycle.Update || second == EventLifecycle.Sleep) && first != EventLifecycle.Cancel)
         {
             return first;
         }
@@ -240,5 +301,6 @@ internal enum EventLifecycle
     Update,
     Dispose,
     Cancel,
-    Renew
+    Renew,
+    Sleep
 }

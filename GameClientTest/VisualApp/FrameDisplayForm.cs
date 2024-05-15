@@ -8,6 +8,7 @@ namespace VisualApp;
 
 public class FrameDisplayForm
 {
+    public bool Sleeping { get; set; } = false;
     public required int Id { get; init; }
     public required Vector2 Position { get; set; }
     public required float Rotation { get; set; }

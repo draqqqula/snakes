@@ -8,6 +8,7 @@ using SnakeGame.Common;
 using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Collision.Resolvers;
 using SnakeGame.Mechanics.Frames;
+using SnakeGame.Mechanics.ViewPort;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Models.Input.Internal;
 using SnakeGame.Models.Output.Internal;

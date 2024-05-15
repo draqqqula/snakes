@@ -1,4 +1,5 @@
 ﻿using SnakeGame.Mechanics.Bodies;
+using SnakeGame.Mechanics.Frames.Output.Interfaces;
 
 namespace SnakeGame.Mechanics.Frames;
 

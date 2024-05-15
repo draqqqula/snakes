@@ -3,7 +3,7 @@ using Microsoft.Win32;
 using SnakeGame.Mechanics.Bodies;
 using System.Numerics;
 
-namespace SnakeGame.Mechanics.Frames;
+namespace SnakeGame.Mechanics.Frames.Output.Interfaces;
 
 internal interface INotificationListener
 {

@@ -37,10 +37,10 @@ public class SessionController : ControllerBase
         var id = new ClientIdentifier();
         var connection = await session.ConnectAsync(id);
 
-        await SendInitialAsync(connection, webSocket, cancellationTokenSource);
+        await SendInitialAsync<ViewPortBasedBinaryOutput>(connection, webSocket, it => it[id], cancellationTokenSource);
 
         var recieveTask = Task.Run(() => RecieveInLoopAsync(connection, webSocket, cancellationTokenSource));
-        await SendInLoopAsync(connection, webSocket, cancellationTokenSource);
+        await SendInLoopAsync<ViewPortBasedBinaryOutput>(connection, webSocket, it => it[id], cancellationTokenSource);
     }
 
     private static async Task RecieveInLoopAsync(ISessionConnection connection, WebSocket webSocket,
@@ -66,20 +66,26 @@ public class SessionController : ControllerBase
         }
     }
 
-    private static async Task SendInLoopAsync(ISessionConnection connection, WebSocket webSocket,
+    private static async Task SendInLoopAsync<T>(ISessionConnection connection, WebSocket webSocket,
+        Func<T, byte[]> func,
         CancellationTokenSource cts)
     {
         while (!webSocket.CloseStatus.HasValue)
         {
-            var output = await connection.GetOutputAsync<EventBasedBinaryOutput?>();
-            if (!output.HasValue)
+            var output = await connection.GetOutputAsync<T>();
+            if (output is null)
             {
                 continue;
             }
             try
             {
+                var buffer = func(output);
+                if (buffer.Length == 0)
+                {
+                    continue;
+                }
                 await webSocket.SendAsync(
-                new ArraySegment<byte>(output.Value.EventData, 0, output.Value.EventData.Length),
+                new ArraySegment<byte>(buffer, 0, buffer.Length),
                 WebSocketMessageType.Binary,
                 true,
                 cts.Token);
@@ -96,14 +102,24 @@ public class SessionController : ControllerBase
         }
     }
 
-    private static async Task SendInitialAsync(ISessionConnection connection, WebSocket webSocket,
+    private static async Task SendInitialAsync<T>(ISessionConnection connection, WebSocket webSocket,
+        Func<T, byte[]> func,
         CancellationTokenSource cts)
     {
-        var output = await connection.GetOutputAsync<StateBasedBinaryOutput>();
+        var output = await connection.GetOutputAsync<T>();
+        if (output is null)
+        {
+            return;
+        }
         try
         {
+            var buffer = func(output);
+            if (buffer.Length == 0)
+            {
+                return;
+            }
             await webSocket.SendAsync(
-            new ArraySegment<byte>(output.Data, 0, output.Data.Length),
+            new ArraySegment<byte>(buffer, 0, buffer.Length),
             WebSocketMessageType.Binary,
             true,
             cts.Token);

@@ -1,5 +1,6 @@
 ﻿using MessageSchemes;
 using ServerEngine.Interfaces.Services;
+using SnakeGame.Mechanics.Frames.Output.Interfaces;
 
 namespace SnakeGame.Mechanics.Frames.Output;
 

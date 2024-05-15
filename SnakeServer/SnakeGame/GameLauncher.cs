@@ -9,6 +9,8 @@ using SnakeGame.Mechanics.Collision;
 using SnakeGame.Mechanics.Collision.Resolvers;
 using SnakeGame.Mechanics.Collision.Shapes;
 using SnakeGame.Mechanics.Frames;
+using SnakeGame.Mechanics.ViewPort;
+using SnakeGame.Mechanics.ViewPort.Display;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Models.Input.External;
 using SnakeGame.Models.Input.Internal;
@@ -17,7 +19,6 @@ using SnakeGame.Models.Output.Internal;
 using SnakeGame.Services.Gameplay;
 using SnakeGame.Services.Gameplay.FrameDrivers;
 using SnakeGame.Services.Input;
-using SnakeGame.Services.Output;
 
 namespace SnakeGame;
 
@@ -25,7 +26,7 @@ public class GameLauncher : ISessionLauncher
 {
     public void Prepare(IServiceCollection services)
     {
-        services.AddFrameMechanicRelated();
+        services.AddFrameProduction();
 
         services.AddSingleton<Dictionary<TeamColor, TeamContext>>();
         services.AddSingleton<List<PickupPoints>>();
@@ -35,6 +36,9 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox>, AABBToAABBResolver>();
         services.AddSingleton<ICollisionResolver<RotatableSquare, RotatableSquare>, RSquareToRSquareResolver>();
         services.AddSingleton<ICollisionChecker, CollisionChecker>();
+
+        services.AddViewProduction();
+        services.AddViewHelp();
 
         services.AddSingleton(new MatchConfiguration()
         {

@@ -11,11 +11,17 @@ internal class ViewPortToCharacterBinder(
 {
     public void Update(IGameContext context)
     {
+        Bind();
+    }
+
+    public void Bind()
+    {
         foreach (var view in ViewPorts)
         {
             if (Characters.TryGetValue(view.Key, out var character))
             {
                 view.Value.Transform.Position = character.Transform.Position;
+                view.Value.Enabled = true;
             }
         }
     }

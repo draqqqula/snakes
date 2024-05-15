@@ -1,6 +1,6 @@
 ﻿using MessageSchemes;
 
-namespace SnakeGame.Mechanics.Frames;
+namespace SnakeGame.Mechanics.Frames.Output.Interfaces;
 
 internal interface IMessageProvider
 {

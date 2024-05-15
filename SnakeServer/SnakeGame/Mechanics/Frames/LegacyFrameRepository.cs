@@ -1,5 +1,6 @@
 ﻿using MessageSchemes;
 using SnakeGame.Mechanics.Bodies;
+using SnakeGame.Mechanics.Frames.Output.Interfaces;
 using System.Drawing;
 using System.Numerics;
 

@@ -13,4 +13,8 @@
     <ProjectReference Include="..\SnakeCore\SnakeCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\Output\" />
+  </ItemGroup>
+
 </Project>

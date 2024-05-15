@@ -13,12 +13,14 @@ namespace SnakeGame.Mechanics.ViewPort;
 internal class ViewPortManager(
     Dictionary<ClientIdentifier, ViewPort> ViewPorts, 
     FrameStorage Storage,
-    ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox> Collision 
+    ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox> Collision,
+    FrameFactory Factory
     ) : 
     ISessionService, IUpdateService
 {
-    public const float ViewPortSize = 40f;
+    public const float ViewPortSize = 200f;
     public Dictionary<ClientIdentifier, List<int>> Intersections { get; } = [];
+    public IEnumerable<KeyValuePair<ClientIdentifier, List<int>>> ActiveIntersections => Intersections.Where(it => ViewPorts[it.Key].Enabled);
     public void OnJoin(IGameContext context, ClientIdentifier id)
     {
         Intersections.Add(id, []);
@@ -29,7 +31,7 @@ internal class ViewPortManager(
                 Angle = 0f,
                 Position = Vector2.Zero,
                 Size = Vector2.One * ViewPortSize,
-            } 
+            }
         });
     }
 
@@ -46,13 +48,13 @@ internal class ViewPortManager(
             Intersections[view.Key].Clear();
             foreach (var frame in Storage.GetAll())
             {
-                if (Collision.IsColliding(view.Value.GetBody().First(), new AxisAlignedBoundingBox()
+                if (Collision.IsColliding(view.Value.GetLayout(), new AxisAlignedBoundingBox()
                 {
-                    Min = frame.Value.Position - frame.Value.Size * 0.5f, 
-                    Max = frame.Value.Position + frame.Value.Size * 0.5f
+                    Min = frame.Transform.Position - frame.Transform.Size * 0.5f, 
+                    Max = frame.Transform.Position + frame.Transform.Size * 0.5f
                 }))
                 {
-                    Intersections[view.Key].Add(frame.Key);
+                    Intersections[view.Key].Add(frame.Id);
                 }
             }
         }

@@ -51,26 +51,34 @@ internal class GameClient(WebSocket webSocket, GameApp game, FileStream log)
                 .ToArray();
         foreach (var position in message.PositionEvents ?? [])
         {
+            game.DisplayBuffer[position.Id].Sleeping = false;
             game.DisplayBuffer[position.Id].Position = new Vector2(position.Position.X, position.Position.Y);
         }
         foreach (var size in message.SizeEvents ?? [])
         {
+            game.DisplayBuffer[size.Id].Sleeping = false;
             game.DisplayBuffer[size.Id].Scale = new Vector2(size.Size.X, size.Size.Y);
         }
         foreach (var angle in message.AngleEvents ?? [])
         {
+            game.DisplayBuffer[angle.Id].Sleeping = false;
             game.DisplayBuffer[angle.Id].Rotation = angle.Angle;
         }
         foreach (var group in message.Transformations ?? [])
         {
             foreach (var id in group.Frames)
             {
+                game.DisplayBuffer[id].Sleeping = false;
                 game.DisplayBuffer[id].Name = group.NewAsset;
             }
         }
         foreach (var id in message.Disposed ?? [])
         {
             game.DisplayBuffer.Remove(id, out var value);
+        }
+        foreach (var id in message.Sleep ?? [])
+        {
+            game.DisplayBuffer[id].Sleeping = true;
         }
         foreach (var frame in created ?? [])
         {

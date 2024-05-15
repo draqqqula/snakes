@@ -2,11 +2,11 @@
 
 namespace SnakeGame.Models.Output.External;
 
-internal class ViewPortBasedBinaryOutput
+public class ViewPortBasedBinaryOutput(Dictionary<ClientIdentifier, byte[]> Data)
 {
-	private readonly Dictionary<ClientIdentifier, byte[]> _data = [];
-	public object this[ClientIdentifier id]
+	private readonly Dictionary<ClientIdentifier, byte[]> _data = Data;
+	public byte[] this[ClientIdentifier id]
 	{
-		get => _data[id];
+		get => _data.GetValueOrDefault(id, []);
 	}
 }

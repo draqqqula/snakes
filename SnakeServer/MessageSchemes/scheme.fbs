@@ -7,10 +7,6 @@ struct Vec2 {
     y : float;
 }
 
-table Message (fs_serializer) {
-    groups: [ Group ];
-}
-
 table EventMessage (fs_serializer) {
     created: [ Group ];
     positionEvents: [ PositionEvent ];
@@ -18,6 +14,7 @@ table EventMessage (fs_serializer) {
     angleEvents: [ AngleEvent ];
     transformations: [ Transformation ];
     disposed: [ int ];
+    sleep: [ int ];
 }
 
 table Group {

@@ -115,7 +115,7 @@ namespace VisualApp
                 try
                 {
                     var texture = Content.Load<Texture2D>(frame.Name);
-                    _spriteBatch.Draw(texture, (frame.Position + CameraPosition) * ScaleFactor + new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2), null, Color.White, frame.Rotation, texture.Bounds.Center.ToVector2(), (frame.Scale * ScaleFactor) / texture.Bounds.Size.ToVector2(), SpriteEffects.None, 0);
+                    _spriteBatch.Draw(texture, (frame.Position + CameraPosition) * ScaleFactor + new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2), null, Color.White * (frame.Sleeping ? 0.3f : 1f), frame.Rotation, texture.Bounds.Center.ToVector2(), (frame.Scale * ScaleFactor) / texture.Bounds.Size.ToVector2(), SpriteEffects.None, 0);
                 }
                 catch (Exception ex)
                 {

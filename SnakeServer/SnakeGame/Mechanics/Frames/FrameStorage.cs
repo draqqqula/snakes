@@ -4,42 +4,47 @@ namespace SnakeGame.Mechanics.Frames;
 
 internal class FrameStorage
 {
-    private Dictionary<int, string> IdToAssetMatcher = new Dictionary<int, string>();
-    private Dictionary<string, Dictionary<int, TransformFrame>> Frames { get; } = [];
+    private readonly Dictionary<int, string> _idToAssetMatcher = new Dictionary<int, string>();
+    private readonly Dictionary<string, Dictionary<int, TransformFrame>> _frames = [];
     public void Add(int id, string asset, TransformFrame frame)
     {
-        IdToAssetMatcher.Add(id, asset);
-        if (!Frames.ContainsKey(asset))
+        _idToAssetMatcher.Add(id, asset);
+        if (!_frames.ContainsKey(asset))
         {
-            Frames.Add(asset, []);
+            _frames.Add(asset, []);
         }
-        Frames[asset].Add(id, frame);
+        _frames[asset].Add(id, frame);
     }
 
     public void Remove(int id)
     {
-        Frames[IdToAssetMatcher[id]].Remove(id);
-        IdToAssetMatcher.Remove(id);
+        _frames[_idToAssetMatcher[id]].Remove(id);
+        _idToAssetMatcher.Remove(id);
     }
 
-    public IEnumerable<KeyValuePair<int, TransformFrame>> GetAll()
+    public IEnumerable<TransformInfo> GetAll()
     {
-        return Frames.SelectMany(it => it.Value);
+        return _frames.SelectMany(group => group.Value.Select(it => new TransformInfo()
+        {
+            Asset = group.Key,
+            Id = it.Key,
+            Transform = it.Value.ReadOnly
+        }));
     }
 
     public void ChangeAsset(int id, string newAsset)
     {
-        var oldAsset = IdToAssetMatcher[id];
-        IdToAssetMatcher.Remove(id);
-        var frame = Frames[oldAsset][id];
-        Frames[oldAsset].Remove(id);
+        var oldAsset = _idToAssetMatcher[id];
+        _idToAssetMatcher.Remove(id);
+        var frame = _frames[oldAsset][id];
+        _frames[oldAsset].Remove(id);
 
         Add(id, newAsset, frame);
     }
     
     public EventMessage GetMessage()
     {
-        var frames = Frames.Select(it => new Group() 
+        var frames = _frames.Select(it => new Group() 
         { 
             Asset = it.Key, 
             Frames = ToFrames(it.Value) 
