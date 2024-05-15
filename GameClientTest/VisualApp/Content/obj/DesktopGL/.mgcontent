@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/2d.PNG</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/area.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body1024.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body128.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body16.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body2.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body256.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body32.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body4.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body512.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body64.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/body8.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/head.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/heart.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/joystick_base.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/joystick.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/lava.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup0.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup1.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup2.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup3.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup4.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup5.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup6.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup7.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup8.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup9.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/viewport.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File>body9.png</File>
+    <File>body6.png</File>
+    <File>body3.png</File>
+    <File>body0.png</File>
+    <File>body7.png</File>
+    <File>body4.png</File>
+    <File>body1.png</File>
+    <File>body8.png</File>
+    <File>body5.png</File>
+    <File>body2.png</File>
+    <File xsi:nil="true" />
+    <File>Player.png</File>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File>Pickup.png</File>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>
