@@ -7,7 +7,7 @@ var sessionId = Console.ReadLine();
 
 var builder = new UriBuilder()
 {
-    Host = "localhost",
+    Host = "26.181.15.68",
     Scheme = "wss",
     Port = 7170,
     Path = "sessions",
@@ -17,6 +17,7 @@ Console.WriteLine(builder.Uri);
 
 using (ClientWebSocket ws = new ClientWebSocket())
 {
+    ws.Options.RemoteCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
     await ws.ConnectAsync(builder.Uri, CancellationToken.None);
     var client = new GameClient(ws);
 

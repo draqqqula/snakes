@@ -4,7 +4,7 @@ using SnakeGame.Mechanics.Frames.Output.Interfaces;
 
 namespace SnakeGame.Mechanics.Frames;
 
-internal sealed class TransformFrame : TransformBase
+internal class TransformFrame : TransformBase
 {
     private readonly INotificationListener _listener;
     private readonly int _id;

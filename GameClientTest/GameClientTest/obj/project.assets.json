@@ -1,11 +1,103 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net8.0": {
+      "FlatSharp.Runtime/7.6.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Memory": "4.5.5"
+        },
+        "compile": {
+          "lib/net8.0/FlatSharp.Runtime.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/FlatSharp.Runtime.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Memory/4.5.5": {
+        "type": "package",
+        "compile": {
+          "ref/netcoreapp2.1/_._": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.1/_._": {}
+        }
+      },
+      "MessageSchemes/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "FlatSharp.Runtime": "7.6.0"
+        },
+        "compile": {
+          "bin/placeholder/MessageSchemes.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/MessageSchemes.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "FlatSharp.Runtime/7.6.0": {
+      "sha512": "mXUU6zCbDdurqRuAMDPuycaFdTNDTUZRpQ74yzTw2a2XtO9k+MDG8ZWngNoUob+rDPCVLFqPCnrWlUuN9cAe2A==",
+      "type": "package",
+      "path": "flatsharp.runtime/7.6.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.nuget.md",
+        "flatsharp.runtime.7.6.0.nupkg.sha512",
+        "flatsharp.runtime.nuspec",
+        "lib/net6.0/FlatSharp.Runtime.dll",
+        "lib/net6.0/FlatSharp.Runtime.xml",
+        "lib/net7.0/FlatSharp.Runtime.dll",
+        "lib/net7.0/FlatSharp.Runtime.xml",
+        "lib/net8.0/FlatSharp.Runtime.dll",
+        "lib/net8.0/FlatSharp.Runtime.xml",
+        "lib/netstandard2.0/FlatSharp.Runtime.dll",
+        "lib/netstandard2.0/FlatSharp.Runtime.xml",
+        "lib/netstandard2.1/FlatSharp.Runtime.dll",
+        "lib/netstandard2.1/FlatSharp.Runtime.xml"
+      ]
+    },
+    "System.Memory/4.5.5": {
+      "sha512": "XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw==",
+      "type": "package",
+      "path": "system.memory/4.5.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.Memory.dll",
+        "lib/net461/System.Memory.xml",
+        "lib/netcoreapp2.1/_._",
+        "lib/netstandard1.1/System.Memory.dll",
+        "lib/netstandard1.1/System.Memory.xml",
+        "lib/netstandard2.0/System.Memory.dll",
+        "lib/netstandard2.0/System.Memory.xml",
+        "ref/netcoreapp2.1/_._",
+        "system.memory.4.5.5.nupkg.sha512",
+        "system.memory.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "MessageSchemes/1.0.0": {
+      "type": "project",
+      "path": "../../SnakeServer/MessageSchemes/MessageSchemes.csproj",
+      "msbuildProject": "../../SnakeServer/MessageSchemes/MessageSchemes.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net8.0": [
+      "MessageSchemes >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\BogdanPC\\.nuget\\packages\\": {},
@@ -39,7 +131,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\BogdanPC\\source\\repos\\snakes\\SnakeServer\\MessageSchemes\\MessageSchemes.csproj": {
+              "projectPath": "C:\\Users\\BogdanPC\\source\\repos\\snakes\\SnakeServer\\MessageSchemes\\MessageSchemes.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

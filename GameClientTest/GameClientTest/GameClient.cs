@@ -1,4 +1,7 @@
-﻿using System.Net.WebSockets;
+﻿using FlatSharp;
+using MessageSchemes;
+using System.Buffers.Binary;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -14,9 +17,23 @@ internal class GameClient(WebSocket webSocket)
             var buffer = new byte[4096];
             await webSocket.ReceiveAsync(buffer, CancellationToken.None);
 
-            var text = Encoding.UTF8.GetString(buffer);
-            Console.WriteLine(text);
+            var capacity = BitConverter.ToInt32(buffer.Take(8).ToArray());
+
+            var inputBuffer = new MemoryInputBuffer(buffer.AsMemory(4, capacity));
+            var message = EventMessage.Serializer.Parse(inputBuffer);
+            Console.WriteLine($"recieved {capacity} bytes: {GetString(inputBuffer.GetMemory().ToArray())}");
         }
+    }
+
+    private string GetString(byte[] memory)
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach ( var item in memory)
+        {
+            sb.Append(item);
+            sb.Append(' ');
+        }
+        return sb.ToString();
     }
 
     public async Task SendLoopAsync()

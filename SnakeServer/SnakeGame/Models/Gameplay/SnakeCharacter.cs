@@ -18,6 +18,7 @@ internal class SnakeCharacter : SquareBody
     public bool OnBase { get; set; } = false;
     public required List<SnakeBodypart> Body { get; init; }
     public required SquareBody Head { get; init; }
+    public byte MaxTier => Body.Select(it => it.Tier).Max();
 
     public void JoinPart(byte tier, FrameFactory factory)
     {

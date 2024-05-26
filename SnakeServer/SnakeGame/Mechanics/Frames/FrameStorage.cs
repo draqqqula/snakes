@@ -34,12 +34,14 @@ internal class FrameStorage
 
     public void ChangeAsset(int id, string newAsset)
     {
-        var oldAsset = _idToAssetMatcher[id];
-        _idToAssetMatcher.Remove(id);
-        var frame = _frames[oldAsset][id];
-        _frames[oldAsset].Remove(id);
+        if (_idToAssetMatcher.TryGetValue(id, out var oldAsset))
+        {
+            _idToAssetMatcher.Remove(id);
+            var frame = _frames[oldAsset][id];
+            _frames[oldAsset].Remove(id);
 
-        Add(id, newAsset, frame);
+            Add(id, newAsset, frame);
+        }
     }
     
     public EventMessage GetMessage()

@@ -26,8 +26,6 @@ internal class AreaSpawner(
 
     public void Update(IGameContext context)
     {
-        CheckPlayers();
-        ApplyAttraction(context.DeltaTime);
     }
 
     public void CheckPlayers()

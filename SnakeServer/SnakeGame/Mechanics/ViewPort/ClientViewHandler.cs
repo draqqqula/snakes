@@ -14,7 +14,9 @@ internal class ClientViewHandler
     private bool CheckLoaded(int id, EventEntry entry, HashSet<int> viewed)
     {
         return viewed.Contains(id) ||
-        (entry.Lifecycle == EventLifecycle.Dispose && ClientInactive.Contains(id));
+        ((entry.Lifecycle == EventLifecycle.Dispose ||
+        entry.Lifecycle == EventLifecycle.Renew) 
+        && ClientInactive.Contains(id));
     }
 
     public void ApplyEvents(EventTable global, HashSet<int> visible)

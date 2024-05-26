@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Numerics;
 using SnakeCore.Collections;
+using Row = System.Collections.Generic.KeyValuePair<int, SnakeGame.Mechanics.Frames.EventEntry>;
 
 namespace SnakeGame.Mechanics.Frames;
 
@@ -12,7 +13,29 @@ internal class EventTable
     private Dictionary<int, EventEntry> _data = [];
 
     public int Count => _data.Count;
-    public EventMessage Serialize()
+    public byte[] Serialize()
+    {
+        var groups = _data.GroupBy(it => it.Value.Lifecycle);
+
+        var createGroup = groups.Where(
+            it => it.Key == EventLifecycle.Create ||
+            it.Key == EventLifecycle.Renew).SelectMany(it => it);
+
+        var disposeGroup = groups.Where(
+            it => it.Key == EventLifecycle.Dispose ||
+            it.Key == EventLifecycle.Renew).SelectMany(it => it);
+
+        var updateGroup = groups.FirstOrDefault(it => it.Key == EventLifecycle.Update)?.AsEnumerable();
+
+        var sleepGroup = groups.FirstOrDefault(it => it.Key == EventLifecycle.Sleep)?.AsEnumerable();
+
+        using var stream = new MemoryStream();
+        using var writer = new BinaryWriter(stream);
+
+        return stream.ToArray();
+    }
+
+    public EventMessage SerializeFlatSharp()
     {
         var created = new List<FrameInfo>();
         var disposed = new List<int>();

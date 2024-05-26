@@ -54,7 +54,7 @@ internal class FrameRepository(FrameStorage Storage) : INotificationListener, IM
 
     public bool TryTakeMessage(out EventMessage? message)
     {
-        message = Table.Serialize();
+        message = Table.SerializeFlatSharp();
         return message.Disposed?.Count > 0 ||
             message.AngleEvents?.Count > 0 ||
             message.SizeEvents?.Count > 0 ||

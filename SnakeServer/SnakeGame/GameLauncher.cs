@@ -18,6 +18,7 @@ using SnakeGame.Models.Output.External;
 using SnakeGame.Models.Output.Internal;
 using SnakeGame.Services.Gameplay;
 using SnakeGame.Services.Gameplay.FrameDrivers;
+using SnakeGame.Services.Gameplay.Spawners;
 using SnakeGame.Services.Input;
 
 namespace SnakeGame;
@@ -30,6 +31,7 @@ public class GameLauncher : ISessionLauncher
 
         services.AddSingleton<Dictionary<TeamColor, TeamContext>>();
         services.AddSingleton<List<PickupPoints>>();
+        services.AddSingleton<Dictionary<TeamContext, List<Slime>>>();
         services.AddSingleton<Dictionary<ClientIdentifier, SnakeCharacter>>();
 
         services.AddSingleton<ICollisionResolver<Polygon, Polygon>, PolygonToPolygonResolver>();
@@ -64,6 +66,10 @@ public class GameLauncher : ISessionLauncher
 
         services.AddSingleton<PickupSpawner>();
         services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<PickupSpawner>());
+
+        services.AddSingleton<SlimeSpawner>();
+        services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<SlimeSpawner>());
+        services.AddSingleton<IStartUpService>(provider => provider.GetRequiredService<SlimeSpawner>());
 
         services.AddSingleton<IInputFormatter<BinaryInput>, MovementDirectionInputFormatter>();
     }

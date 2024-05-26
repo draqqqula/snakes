@@ -24,6 +24,8 @@ internal class PickupSpawner(
 
     private const int MaxPickups = 128;
 
+    private readonly Random _random = new Random();
+
     public void Update(IGameContext context)
     {
         foreach (var player in Players)
@@ -46,14 +48,14 @@ internal class PickupSpawner(
         {
             for (int i = 0; i < Math.Min(6, MaxPickups - Pickups.Count); i++)
             {
-                var tier = (byte)Random.Shared.Next(0, 2);
+                var tier = (byte)_random.Next(0, 2);
                 var tile = new PickupPoints()
                 { 
                     Transform = Factory.Create($"pickup{tier}", new Transform()
                     {
-                        Angle = Random.Shared.NextSingle() * MathF.PI,
+                        Angle = _random.NextSingle() * MathF.PI,
                         Size = new Vector2(4, 4),
-                        Position = new Vector2(Random.Shared.NextSingle() - 0.5f, Random.Shared.NextSingle() - 0.5f) * 500
+                        Position = new Vector2(_random.NextSingle() - 0.5f, _random.NextSingle() - 0.5f) * 500
                     }),
                     Tier = tier
                 };

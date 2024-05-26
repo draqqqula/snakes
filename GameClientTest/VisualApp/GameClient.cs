@@ -15,7 +15,7 @@ using Microsoft.Xna.Framework;
 
 namespace VisualApp;
 
-internal class GameClient(WebSocket webSocket, GameApp game, FileStream log)
+internal class GameClient(WebSocket webSocket, GameApp game)
 {
     private EventMessage LastMessage;
     volatile GameApp app = game;

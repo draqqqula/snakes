@@ -32,7 +32,11 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\BogdanPC\\source\\repos\\snakes\\SnakeServer\\MessageSchemes\\MessageSchemes.csproj": {
+                "projectPath": "C:\\Users\\BogdanPC\\source\\repos\\snakes\\SnakeServer\\MessageSchemes\\MessageSchemes.csproj"
+              }
+            }
           }
         },
         "warningProperties": {

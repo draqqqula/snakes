@@ -31,6 +31,16 @@
     <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup7.png</File>
     <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup8.png</File>
     <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/pickup9.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime0.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime1.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime2.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime3.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime4.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime5.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime6.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime7.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime8.png</File>
+    <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/slime9.png</File>
     <File>C:/Users/BogdanPC/source/repos/snakes/GameClientTest/VisualApp/Content/viewport.png</File>
   </SourceFiles>
   <DestFiles>
@@ -51,6 +61,16 @@
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File>Pickup.png</File>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

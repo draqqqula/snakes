@@ -19,7 +19,7 @@ internal class ViewPortBasedOutputTransformer(ViewPortManager Manager) :
 
     public void Pass(ClientEventSet data)
     {
-        _data.Add(data.Id, data.Table.Serialize());
+        _data.Add(data.Id, data.Table.SerializeFlatSharp());
     }
 
     private byte[] Serialize(EventMessage message)

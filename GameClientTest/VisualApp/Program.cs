@@ -11,23 +11,20 @@ using System.Net;
 var sessionId = File.ReadLines("sessionId.txt").First();
 var builder = new UriBuilder()
 {
-    Host = "26.181.15.68",
+    Host = "localhost",
     Scheme = "wss",
     Port = 7170,
     Path = "sessions",
     Query = $"sessionId={sessionId}"
 };
-
-using var logStream = File.Create($"log_{sessionId}.txt");
 using var game = new VisualApp.GameApp();
 using (ClientWebSocket ws = new ClientWebSocket())
 {
     ws.Options.RemoteCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
     await ws.ConnectAsync(builder.Uri, CancellationToken.None);
-    var client = new GameClient(ws, game, logStream);
+    var client = new GameClient(ws, game);
 
     var sendTask = Task.Run(client.SendLoopAsync);
     var recieveTask = Task.Run(client.RecieveLoopAsync);
     game.Run();
 }
-logStream.Close();

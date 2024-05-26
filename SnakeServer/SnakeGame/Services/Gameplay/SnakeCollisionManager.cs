@@ -45,8 +45,8 @@ internal class SnakeCollisionManager
             return;
         }
 
-        var masterTier = master.Body.Select(it => it.Tier).Max();
-        var slaveTier = slave.Body.Select(it => it.Tier).Max();
+        var masterTier = master.MaxTier;
+        var slaveTier = slave.MaxTier;
 
         if (collision.IsColliding(master.Head, slave))
         {
