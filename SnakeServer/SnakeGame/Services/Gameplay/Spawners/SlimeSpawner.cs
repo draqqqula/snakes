@@ -10,6 +10,7 @@ using SnakeGame.Mechanics.Frames;
 using SnakeGame.Mechanics.Physics;
 using SnakeGame.Models.Gameplay;
 using System.Numerics;
+using System.Security.Claims;
 
 namespace SnakeGame.Services.Gameplay.Spawners;
 
@@ -23,6 +24,8 @@ internal class SlimeSpawner(
     IUpdateService,
     IStartUpService
 {
+    private const float MinRadius = 40f;
+    private const float Deceleration = 2f;
     private Dictionary<Slime, PhysicsMovement> SlimePhysics = [];
     public void Update(IGameContext context)
     {
@@ -42,9 +45,12 @@ internal class SlimeSpawner(
             }
         }
 
-        foreach (var group in Slimes.Values)
+        foreach (var group in Slimes)
         {
-            ApplyAttraction(group, context.DeltaTime);
+            ApplyAttraction(group.Value, context.DeltaTime);
+            var balance = group.Value
+                .Sum(it => it.Value);
+            group.Key.Area.Radius = MinRadius + MathF.Max(0, MathF.Sqrt(balance));
         }
     }
 
@@ -86,7 +92,10 @@ internal class SlimeSpawner(
         };
         Slimes[team].Add(slime);
         SlimePhysics.Add(slime, new PhysicsMovement(
-            new BounceInCircleBehaviour<RotatableSquare>(team.Area, slime, Collision)));
+            new BounceInCircleBehaviour<RotatableSquare>(team.Area, slime, Collision))
+        {
+            Deceleration = Deceleration
+        });
         return slime;
     }
 
@@ -185,7 +194,7 @@ internal class SlimeSpawner(
                 Merge(slime, target);
             }
             var direction = Vector2.Normalize(target.Transform.Position - slime.Transform.Position);
-            SlimePhysics[slime].AddMomentum(direction * deltaTime);
+            SlimePhysics[slime].AddMomentum(direction * deltaTime * 2);
         }
     }
 }

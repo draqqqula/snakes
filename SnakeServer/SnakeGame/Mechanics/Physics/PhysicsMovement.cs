@@ -7,7 +7,7 @@ namespace SnakeGame.Mechanics.Physics;
 internal class PhysicsMovement(IMovementBehaviour behaviour)
 {
     public IMovementBehaviour Behaviour { get; set; } = behaviour;
-    public float Deceleration { get; set; } = 5f;
+    public float Deceleration { get; set; } = 0f;
     public Vector2 ResultingVector { get; private set; } = Vector2.Zero;
     public void AddMomentum(Vector2 vector)
     {
