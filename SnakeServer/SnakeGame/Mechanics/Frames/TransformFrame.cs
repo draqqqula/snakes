@@ -21,6 +21,8 @@ internal class TransformFrame : TransformBase
         _angle = transform.Angle;
     }
 
+    public override int? Id { get => _id; }
+
     public override Vector2 Position
     {
         get => _position;

@@ -4,6 +4,7 @@ namespace SnakeGame.Mechanics.Bodies
 {
     internal abstract class TransformBase : IDisposable
     {
+        public virtual int? Id { get; } = null;
         public virtual Vector2 Position { get; set; }
         public virtual float Angle { get; set; }
         public virtual Vector2 Size { get; set; }

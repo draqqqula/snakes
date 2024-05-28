@@ -31,8 +31,12 @@ internal class SlimeSpawner(
     {
         CheckPlayers();
 
-        foreach (var slime in Slimes.SelectMany(it => it.Value))
+        foreach (var slime in Slimes.SelectMany(it => it.Value).ToArray())
         {
+            if (!Slimes[slime.Team].Contains(slime))
+            {
+                continue;
+            }
             slime.UpdateStatus(context.DeltaTime);
             SlimePhysics[slime].Update(context.DeltaTime);
 
@@ -114,7 +118,7 @@ internal class SlimeSpawner(
 
     private void Merge(Slime slimeA, Slime slimeB)
     {
-        if (slimeA.Tier != slimeB.Tier)
+        if (slimeA.Tier != slimeB.Tier || slimeA.Stunned || slimeB.Stunned)
         {
             return;
         }
@@ -151,10 +155,10 @@ internal class SlimeSpawner(
         else
         {
             var slimeA = SpawnSlime(slime.Team, slime.Transform.ReadOnly, (byte)(slime.Tier - 1));
-            slime.Stun(0.3f);
+            slimeA.Stun(0.3f);
             Push(slimeA, impactAngle + MathF.PI / 6);
             var slimeB = SpawnSlime(slime.Team, slime.Transform.ReadOnly, (byte)(slime.Tier - 1));
-            slime.Stun(0.3f);
+            slimeB.Stun(0.3f);
             Push(slimeB, impactAngle - MathF.PI / 6);
             Dispose(slime);
         }
@@ -162,10 +166,6 @@ internal class SlimeSpawner(
 
     private void Push(Slime slime, float angle)
     {
-        if (slime.Stunned)
-        {
-            return;
-        }
         SlimePhysics[slime].AddMomentum(
             MathEx.AngleToVector(MathEx.NormalizeAngle(angle, MathF.PI * 2)));
     }
@@ -174,7 +174,7 @@ internal class SlimeSpawner(
     {
         foreach (var slime in group.ToArray())
         {
-            if (!group.Contains(slime))
+            if (!group.Contains(slime) || slime.Stunned)
             {
                 continue;
             }
@@ -192,6 +192,7 @@ internal class SlimeSpawner(
                 slime.Transform.Size.X * 0.5f + target.Transform.Size.X * 0.5f)
             {
                 Merge(slime, target);
+                return;
             }
             var direction = Vector2.Normalize(target.Transform.Position - slime.Transform.Position);
             SlimePhysics[slime].AddMomentum(direction * deltaTime * 2);

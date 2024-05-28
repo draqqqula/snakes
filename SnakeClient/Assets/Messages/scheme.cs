@@ -26,34 +26,92 @@ public struct Vec2 : IFlatbufferObject
   }
 };
 
-public struct Message : IFlatbufferObject
+public struct EventMessage : IFlatbufferObject
 {
   private Table __p;
   public ByteBuffer ByteBuffer { get { return __p.bb; } }
   public static void ValidateVersion() { FlatBufferConstants.FLATBUFFERS_1_11_1(); }
-  public static Message GetRootAsMessage(ByteBuffer _bb) { return GetRootAsMessage(_bb, new Message()); }
-  public static Message GetRootAsMessage(ByteBuffer _bb, Message obj) { return (obj.__assign(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
+  public static EventMessage GetRootAsEventMessage(ByteBuffer _bb) { return GetRootAsEventMessage(_bb, new EventMessage()); }
+  public static EventMessage GetRootAsEventMessage(ByteBuffer _bb, EventMessage obj) { return (obj.__assign(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
-  public Message __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+  public EventMessage __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public MessageSchemes.Group? Groups(int j) { int o = __p.__offset(4); return o != 0 ? (MessageSchemes.Group?)(new MessageSchemes.Group()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
-  public int GroupsLength { get { int o = __p.__offset(4); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public MessageSchemes.Group? Created(int j) { int o = __p.__offset(4); return o != 0 ? (MessageSchemes.Group?)(new MessageSchemes.Group()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
+  public int CreatedLength { get { int o = __p.__offset(4); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public MessageSchemes.PositionEvent? PositionEvents(int j) { int o = __p.__offset(6); return o != 0 ? (MessageSchemes.PositionEvent?)(new MessageSchemes.PositionEvent()).__assign(__p.__vector(o) + j * 12, __p.bb) : null; }
+  public int PositionEventsLength { get { int o = __p.__offset(6); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public MessageSchemes.SizeEvent? SizeEvents(int j) { int o = __p.__offset(8); return o != 0 ? (MessageSchemes.SizeEvent?)(new MessageSchemes.SizeEvent()).__assign(__p.__vector(o) + j * 12, __p.bb) : null; }
+  public int SizeEventsLength { get { int o = __p.__offset(8); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public MessageSchemes.AngleEvent? AngleEvents(int j) { int o = __p.__offset(10); return o != 0 ? (MessageSchemes.AngleEvent?)(new MessageSchemes.AngleEvent()).__assign(__p.__vector(o) + j * 8, __p.bb) : null; }
+  public int AngleEventsLength { get { int o = __p.__offset(10); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public MessageSchemes.Transformation? Transformations(int j) { int o = __p.__offset(12); return o != 0 ? (MessageSchemes.Transformation?)(new MessageSchemes.Transformation()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
+  public int TransformationsLength { get { int o = __p.__offset(12); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public int Disposed(int j) { int o = __p.__offset(14); return o != 0 ? __p.bb.GetInt(__p.__vector(o) + j * 4) : (int)0; }
+  public int DisposedLength { get { int o = __p.__offset(14); return o != 0 ? __p.__vector_len(o) : 0; } }
+#if ENABLE_SPAN_T
+  public Span<int> GetDisposedBytes() { return __p.__vector_as_span<int>(14, 4); }
+#else
+  public ArraySegment<byte>? GetDisposedBytes() { return __p.__vector_as_arraysegment(14); }
+#endif
+  public int[] GetDisposedArray() { return __p.__vector_as_array<int>(14); }
+  public int Sleep(int j) { int o = __p.__offset(16); return o != 0 ? __p.bb.GetInt(__p.__vector(o) + j * 4) : (int)0; }
+  public int SleepLength { get { int o = __p.__offset(16); return o != 0 ? __p.__vector_len(o) : 0; } }
+#if ENABLE_SPAN_T
+  public Span<int> GetSleepBytes() { return __p.__vector_as_span<int>(16, 4); }
+#else
+  public ArraySegment<byte>? GetSleepBytes() { return __p.__vector_as_arraysegment(16); }
+#endif
+  public int[] GetSleepArray() { return __p.__vector_as_array<int>(16); }
+  public int AttachCamera { get { int o = __p.__offset(18); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
 
-  public static Offset<MessageSchemes.Message> CreateMessage(FlatBufferBuilder builder,
-      VectorOffset groupsOffset = default(VectorOffset)) {
-    builder.StartTable(1);
-    Message.AddGroups(builder, groupsOffset);
-    return Message.EndMessage(builder);
+  public static Offset<MessageSchemes.EventMessage> CreateEventMessage(FlatBufferBuilder builder,
+      VectorOffset createdOffset = default(VectorOffset),
+      VectorOffset positionEventsOffset = default(VectorOffset),
+      VectorOffset sizeEventsOffset = default(VectorOffset),
+      VectorOffset angleEventsOffset = default(VectorOffset),
+      VectorOffset transformationsOffset = default(VectorOffset),
+      VectorOffset disposedOffset = default(VectorOffset),
+      VectorOffset sleepOffset = default(VectorOffset),
+      int attachCamera = 0) {
+    builder.StartTable(8);
+    EventMessage.AddAttachCamera(builder, attachCamera);
+    EventMessage.AddSleep(builder, sleepOffset);
+    EventMessage.AddDisposed(builder, disposedOffset);
+    EventMessage.AddTransformations(builder, transformationsOffset);
+    EventMessage.AddAngleEvents(builder, angleEventsOffset);
+    EventMessage.AddSizeEvents(builder, sizeEventsOffset);
+    EventMessage.AddPositionEvents(builder, positionEventsOffset);
+    EventMessage.AddCreated(builder, createdOffset);
+    return EventMessage.EndEventMessage(builder);
   }
 
-  public static void StartMessage(FlatBufferBuilder builder) { builder.StartTable(1); }
-  public static void AddGroups(FlatBufferBuilder builder, VectorOffset groupsOffset) { builder.AddOffset(0, groupsOffset.Value, 0); }
-  public static VectorOffset CreateGroupsVector(FlatBufferBuilder builder, Offset<MessageSchemes.Group>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
-  public static VectorOffset CreateGroupsVectorBlock(FlatBufferBuilder builder, Offset<MessageSchemes.Group>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
-  public static void StartGroupsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
-  public static Offset<MessageSchemes.Message> EndMessage(FlatBufferBuilder builder) {
+  public static void StartEventMessage(FlatBufferBuilder builder) { builder.StartTable(8); }
+  public static void AddCreated(FlatBufferBuilder builder, VectorOffset createdOffset) { builder.AddOffset(0, createdOffset.Value, 0); }
+  public static VectorOffset CreateCreatedVector(FlatBufferBuilder builder, Offset<MessageSchemes.Group>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
+  public static VectorOffset CreateCreatedVectorBlock(FlatBufferBuilder builder, Offset<MessageSchemes.Group>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
+  public static void StartCreatedVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddPositionEvents(FlatBufferBuilder builder, VectorOffset positionEventsOffset) { builder.AddOffset(1, positionEventsOffset.Value, 0); }
+  public static void StartPositionEventsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(12, numElems, 4); }
+  public static void AddSizeEvents(FlatBufferBuilder builder, VectorOffset sizeEventsOffset) { builder.AddOffset(2, sizeEventsOffset.Value, 0); }
+  public static void StartSizeEventsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(12, numElems, 4); }
+  public static void AddAngleEvents(FlatBufferBuilder builder, VectorOffset angleEventsOffset) { builder.AddOffset(3, angleEventsOffset.Value, 0); }
+  public static void StartAngleEventsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(8, numElems, 4); }
+  public static void AddTransformations(FlatBufferBuilder builder, VectorOffset transformationsOffset) { builder.AddOffset(4, transformationsOffset.Value, 0); }
+  public static VectorOffset CreateTransformationsVector(FlatBufferBuilder builder, Offset<MessageSchemes.Transformation>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
+  public static VectorOffset CreateTransformationsVectorBlock(FlatBufferBuilder builder, Offset<MessageSchemes.Transformation>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
+  public static void StartTransformationsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddDisposed(FlatBufferBuilder builder, VectorOffset disposedOffset) { builder.AddOffset(5, disposedOffset.Value, 0); }
+  public static VectorOffset CreateDisposedVector(FlatBufferBuilder builder, int[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddInt(data[i]); return builder.EndVector(); }
+  public static VectorOffset CreateDisposedVectorBlock(FlatBufferBuilder builder, int[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
+  public static void StartDisposedVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddSleep(FlatBufferBuilder builder, VectorOffset sleepOffset) { builder.AddOffset(6, sleepOffset.Value, 0); }
+  public static VectorOffset CreateSleepVector(FlatBufferBuilder builder, int[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddInt(data[i]); return builder.EndVector(); }
+  public static VectorOffset CreateSleepVectorBlock(FlatBufferBuilder builder, int[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
+  public static void StartSleepVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddAttachCamera(FlatBufferBuilder builder, int attachCamera) { builder.AddInt(7, attachCamera, 0); }
+  public static Offset<MessageSchemes.EventMessage> EndEventMessage(FlatBufferBuilder builder) {
     int o = builder.EndTable();
-    return new Offset<MessageSchemes.Message>(o);
+    return new Offset<MessageSchemes.EventMessage>(o);
   }
 };
 
@@ -93,6 +151,111 @@ public struct Group : IFlatbufferObject
   public static Offset<MessageSchemes.Group> EndGroup(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<MessageSchemes.Group>(o);
+  }
+};
+
+public struct PositionEvent : IFlatbufferObject
+{
+  private Struct __p;
+  public ByteBuffer ByteBuffer { get { return __p.bb; } }
+  public void __init(int _i, ByteBuffer _bb) { __p = new Struct(_i, _bb); }
+  public PositionEvent __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+
+  public int Id { get { return __p.bb.GetInt(__p.bb_pos + 0); } }
+  public MessageSchemes.Vec2 Position { get { return (new MessageSchemes.Vec2()).__assign(__p.bb_pos + 4, __p.bb); } }
+
+  public static Offset<MessageSchemes.PositionEvent> CreatePositionEvent(FlatBufferBuilder builder, int Id, float position_X, float position_Y) {
+    builder.Prep(4, 12);
+    builder.Prep(4, 8);
+    builder.PutFloat(position_Y);
+    builder.PutFloat(position_X);
+    builder.PutInt(Id);
+    return new Offset<MessageSchemes.PositionEvent>(builder.Offset);
+  }
+};
+
+public struct SizeEvent : IFlatbufferObject
+{
+  private Struct __p;
+  public ByteBuffer ByteBuffer { get { return __p.bb; } }
+  public void __init(int _i, ByteBuffer _bb) { __p = new Struct(_i, _bb); }
+  public SizeEvent __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+
+  public int Id { get { return __p.bb.GetInt(__p.bb_pos + 0); } }
+  public MessageSchemes.Vec2 Size { get { return (new MessageSchemes.Vec2()).__assign(__p.bb_pos + 4, __p.bb); } }
+
+  public static Offset<MessageSchemes.SizeEvent> CreateSizeEvent(FlatBufferBuilder builder, int Id, float size_X, float size_Y) {
+    builder.Prep(4, 12);
+    builder.Prep(4, 8);
+    builder.PutFloat(size_Y);
+    builder.PutFloat(size_X);
+    builder.PutInt(Id);
+    return new Offset<MessageSchemes.SizeEvent>(builder.Offset);
+  }
+};
+
+public struct AngleEvent : IFlatbufferObject
+{
+  private Struct __p;
+  public ByteBuffer ByteBuffer { get { return __p.bb; } }
+  public void __init(int _i, ByteBuffer _bb) { __p = new Struct(_i, _bb); }
+  public AngleEvent __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+
+  public int Id { get { return __p.bb.GetInt(__p.bb_pos + 0); } }
+  public float Angle { get { return __p.bb.GetFloat(__p.bb_pos + 4); } }
+
+  public static Offset<MessageSchemes.AngleEvent> CreateAngleEvent(FlatBufferBuilder builder, int Id, float Angle) {
+    builder.Prep(4, 8);
+    builder.PutFloat(Angle);
+    builder.PutInt(Id);
+    return new Offset<MessageSchemes.AngleEvent>(builder.Offset);
+  }
+};
+
+public struct Transformation : IFlatbufferObject
+{
+  private Table __p;
+  public ByteBuffer ByteBuffer { get { return __p.bb; } }
+  public static void ValidateVersion() { FlatBufferConstants.FLATBUFFERS_1_11_1(); }
+  public static Transformation GetRootAsTransformation(ByteBuffer _bb) { return GetRootAsTransformation(_bb, new Transformation()); }
+  public static Transformation GetRootAsTransformation(ByteBuffer _bb, Transformation obj) { return (obj.__assign(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
+  public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
+  public Transformation __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+
+  public string NewAsset { get { int o = __p.__offset(4); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
+#if ENABLE_SPAN_T
+  public Span<byte> GetNewAssetBytes() { return __p.__vector_as_span<byte>(4, 1); }
+#else
+  public ArraySegment<byte>? GetNewAssetBytes() { return __p.__vector_as_arraysegment(4); }
+#endif
+  public byte[] GetNewAssetArray() { return __p.__vector_as_array<byte>(4); }
+  public int Frames(int j) { int o = __p.__offset(6); return o != 0 ? __p.bb.GetInt(__p.__vector(o) + j * 4) : (int)0; }
+  public int FramesLength { get { int o = __p.__offset(6); return o != 0 ? __p.__vector_len(o) : 0; } }
+#if ENABLE_SPAN_T
+  public Span<int> GetFramesBytes() { return __p.__vector_as_span<int>(6, 4); }
+#else
+  public ArraySegment<byte>? GetFramesBytes() { return __p.__vector_as_arraysegment(6); }
+#endif
+  public int[] GetFramesArray() { return __p.__vector_as_array<int>(6); }
+
+  public static Offset<MessageSchemes.Transformation> CreateTransformation(FlatBufferBuilder builder,
+      StringOffset newAssetOffset = default(StringOffset),
+      VectorOffset framesOffset = default(VectorOffset)) {
+    builder.StartTable(2);
+    Transformation.AddFrames(builder, framesOffset);
+    Transformation.AddNewAsset(builder, newAssetOffset);
+    return Transformation.EndTransformation(builder);
+  }
+
+  public static void StartTransformation(FlatBufferBuilder builder) { builder.StartTable(2); }
+  public static void AddNewAsset(FlatBufferBuilder builder, StringOffset newAssetOffset) { builder.AddOffset(0, newAssetOffset.Value, 0); }
+  public static void AddFrames(FlatBufferBuilder builder, VectorOffset framesOffset) { builder.AddOffset(1, framesOffset.Value, 0); }
+  public static VectorOffset CreateFramesVector(FlatBufferBuilder builder, int[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddInt(data[i]); return builder.EndVector(); }
+  public static VectorOffset CreateFramesVectorBlock(FlatBufferBuilder builder, int[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
+  public static void StartFramesVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static Offset<MessageSchemes.Transformation> EndTransformation(FlatBufferBuilder builder) {
+    int o = builder.EndTable();
+    return new Offset<MessageSchemes.Transformation>(o);
   }
 };
 

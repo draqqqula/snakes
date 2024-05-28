@@ -5,6 +5,8 @@ using NativeWebSocket;
 using System;
 using FlatBuffers;
 using MessageSchemes;
+using Assets.State;
+using Zenject;
 
 public class WebSocketController : MonoBehaviour
 {
@@ -13,12 +15,21 @@ public class WebSocketController : MonoBehaviour
     [field: SerializeField]
     public string SessionId { get; private set; }
     private WebSocket WebSocket { get; set; }
-    public FrameDisplay FrameDisplay;
+
     public JoystickBehaviour JoyStick;
     private float CurrentAngle { get; set; }
 
     [field: SerializeField]
     public float DirectionDelta { get; set; }
+
+    public IMessageReader Reader;
+
+    [Inject]
+    public void Construct(IMessageReader reader)
+    {
+        Reader = reader;
+    }
+
     void Start()
     {
         WebSocket = new WebSocket(string.Concat(ConnectionString, SessionId));
@@ -39,8 +50,6 @@ public class WebSocketController : MonoBehaviour
 
     public void OnMessage(byte[] buffer)
     {
-        ByteBuffer loader = new ByteBuffer(buffer, 4);
-        var message = Message.GetRootAsMessage(loader);
-        FrameDisplay.Synchronize(message);
+        Reader.Read(buffer);
     }
 }

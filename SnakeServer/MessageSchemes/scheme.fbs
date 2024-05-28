@@ -15,6 +15,7 @@ table EventMessage (fs_serializer) {
     transformations: [ Transformation ];
     disposed: [ int ];
     sleep: [ int ];
+    attachCamera: int;
 }
 
 table Group {

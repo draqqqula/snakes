@@ -6,9 +6,11 @@ using SnakeGame.Mechanics.Frames.Output.Interfaces;
 using SnakeGame.Mechanics.Frames.Output;
 using SnakeGame.Mechanics.Frames;
 using SnakeGame.Models.Output.External;
-using SnakeGame.Mechanics.ViewPort.Output;
 using ServerEngine.Interfaces;
 using ServerEngine.Models;
+using SnakeGame.Models.Output.Internal;
+using SnakeGame.Services.Output.Services;
+using SnakeGame.Services.Output;
 
 namespace SnakeGame.Mechanics.ViewPort;
 
@@ -22,7 +24,7 @@ internal static class StartUp
         services.AddSingleton<IUpdateService, ViewPortToCharacterBinder>();
         services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<ViewPortManager>());
         services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<ViewPortManager>());
-        services.AddSingleton<IOutputService<ClientEventSet>, ViewOutputService>();
-        services.AddOutputFabricScoped<ClientEventSet, ViewPortBasedBinaryOutput, ViewPortBasedOutputTransformer>();
+        services.AddSingleton<IOutputService<ClientCommandWrapper>, ViewOutputService>();
+        services.AddOutputFabricScoped<ClientCommandWrapper, ViewPortBasedBinaryOutput, ViewPortBasedOutputTransformer>();
     }
 }
