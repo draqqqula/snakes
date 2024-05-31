@@ -12,7 +12,8 @@ namespace SnakeGame.Services.Gameplay;
 
 internal class SnakeMovementManager(Dictionary<ClientIdentifier, SnakeCharacter> Players) : IUpdateService
 {
-    public const float MaxTrailLength = 4f;
+    public const float MaxTrailLength = 5f;
+    private const float HeadOffset = 4f;
     public const float RotationSpeed = MathF.PI * 2f;
     public void Update(IGameContext context)
     {
@@ -23,7 +24,7 @@ internal class SnakeMovementManager(Dictionary<ClientIdentifier, SnakeCharacter>
             var direction = new Vector2(MathF.Cos(player.Transform.Angle), MathF.Sin(player.Transform.Angle));
             var distance = player.Speed * direction * context.DeltaTime;
 
-            player.Head.Transform.Position = player.Transform.Position + direction * MaxTrailLength;
+            player.Head.Transform.Position = player.Transform.Position + direction * HeadOffset;
             player.Head.Transform.Angle = player.Transform.Angle;
 
             var transitSegment = new SnakeTrailSegment()

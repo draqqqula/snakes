@@ -31,7 +31,7 @@ internal class SnakeCharacter : SquareBody
         {
             Body.Insert(0, new SnakeBodypart()
             {
-                Transform = factory.Create($"body{tier}", Transform.ReadOnly),
+                Transform = factory.Create($"body{tier}_{Team}", Transform.ReadOnly),
                 Tier = tier
             });
             return;
@@ -44,7 +44,7 @@ internal class SnakeCharacter : SquareBody
         });
         Body.Insert(Body.IndexOf(frontElement) + 1, new SnakeBodypart() 
         { 
-            Transform = factory.Create($"body{tier}", Transform.ReadOnly),
+            Transform = factory.Create($"body{tier}_{Team}", Transform.ReadOnly),
             Tier = tier
         });
     }
@@ -68,7 +68,7 @@ internal class SnakeCharacter : SquareBody
                 else
                 {
                     part.Tier += 1;
-                    part.Transform.ChangeAsset($"body{part.Tier}");
+                    part.Transform.ChangeAsset($"body{part.Tier}_{Team}");
                 }
                 return true;
             }

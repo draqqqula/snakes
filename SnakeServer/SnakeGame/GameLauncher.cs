@@ -16,10 +16,13 @@ using SnakeGame.Models.Input.External;
 using SnakeGame.Models.Input.Internal;
 using SnakeGame.Models.Output.External;
 using SnakeGame.Models.Output.Internal;
+using SnakeGame.Services;
 using SnakeGame.Services.Gameplay;
 using SnakeGame.Services.Gameplay.FrameDrivers;
 using SnakeGame.Services.Gameplay.Spawners;
 using SnakeGame.Services.Input;
+using SnakeGame.Services.Output;
+using SnakeGame.Services.Output.Services;
 
 namespace SnakeGame;
 
@@ -40,6 +43,10 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<ICollisionChecker, CollisionChecker>();
 
         services.AddViewProduction();
+        services.AddSingleton<IOutputService<ClientCommandWrapper>, ViewOutputService>();
+        services.AddOutputFabricScoped<ClientCommandWrapper, ViewPortBasedBinaryOutput, ViewPortBasedOutputTransformer>();
+        services.AddSingleton<CommandSender>();
+        services.AddSingleton<IOutputService<ClientCommandWrapper>>(provider => provider.GetRequiredService<CommandSender>());
         services.AddViewHelp();
 
         services.AddSingleton(new MatchConfiguration()
@@ -54,8 +61,9 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<IStartUpService>(it => it.GetRequiredService<MatchManager>());
         services.AddSingleton<ISessionService>(it => it.GetRequiredService<MatchManager>());
 
-        services.AddSingleton<AreaSpawner>();
-        services.AddSingleton<IUpdateService>(it => it.GetRequiredService<AreaSpawner>());
+        services.AddSingleton<ScoreManager>();
+        services.AddSingleton<IStartUpService>(it => it.GetRequiredService<ScoreManager>());
+        services.AddSingleton<ISessionService>(it => it.GetRequiredService<ScoreManager>());
 
         services.AddSingleton<SnakeSpawner>();
         services.AddSingleton<IInputService<MovementDirectionInput>>(provider => provider.GetRequiredService<SnakeSpawner>());

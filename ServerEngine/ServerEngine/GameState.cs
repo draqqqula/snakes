@@ -20,6 +20,7 @@ internal class GameState(SessionHandler handler) : IGameState
 
     public void Initialize(ISessionLauncher launcher)
     {
+        _services.AddSingleton<IInternalSessionController>(new InternalSessionController(_handler));
         launcher.Prepare(this._services);
 
         Provider = _services.BuildServiceProvider();

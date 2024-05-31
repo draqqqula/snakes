@@ -13,6 +13,8 @@ internal class SessionHandler
 
     internal volatile bool Closed = false;
 
+    internal volatile float TimeScale = 1.0f;
+
     internal List<OutputMessage> Output { get; } = [];
     internal SemaphoreSlim Semaphore { get; } = new SemaphoreSlim(1);
     internal ConcurrentQueue<ClientIdentifier> JoinQueue { get; } = new ();

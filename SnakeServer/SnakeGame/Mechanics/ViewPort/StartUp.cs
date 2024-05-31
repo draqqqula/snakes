@@ -24,7 +24,5 @@ internal static class StartUp
         services.AddSingleton<IUpdateService, ViewPortToCharacterBinder>();
         services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<ViewPortManager>());
         services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<ViewPortManager>());
-        services.AddSingleton<IOutputService<ClientCommandWrapper>, ViewOutputService>();
-        services.AddOutputFabricScoped<ClientCommandWrapper, ViewPortBasedBinaryOutput, ViewPortBasedOutputTransformer>();
     }
 }

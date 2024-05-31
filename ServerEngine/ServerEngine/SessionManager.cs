@@ -54,7 +54,7 @@ internal class SessionManager : ISessionManager
                 await handler.Semaphore.WaitAsync();
                 await Task.Delay(FixedTimeStep);
 
-                state.Update(TimeSpan.FromMilliseconds(FixedTimeStep));
+                state.Update(TimeSpan.FromMilliseconds(FixedTimeStep) * handler.TimeScale);
                 handler.Semaphore.Release();
             }
         }

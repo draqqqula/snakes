@@ -1,17 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using NativeWebSocket;
 using System;
-using FlatBuffers;
-using MessageSchemes;
 using Assets.State;
 using Zenject;
+using UnityEngine.Networking;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
 
 public class WebSocketController : MonoBehaviour
 {
+    [SerializeField]
+    public bool AutoCreateSession;
+
     [field: SerializeField]
     public string ConnectionString { get; private set; }
+    [field: SerializeField]
+    public string LaunchString { get; private set; }
     [field: SerializeField]
     public string SessionId { get; private set; }
     private WebSocket WebSocket { get; set; }
@@ -22,7 +27,11 @@ public class WebSocketController : MonoBehaviour
     [field: SerializeField]
     public float DirectionDelta { get; set; }
 
+    public UnityWebRequest CreateSessionRequest;
+
     public IMessageReader Reader;
+
+    private bool SessionFound = false;
 
     [Inject]
     public void Construct(IMessageReader reader)
@@ -30,22 +39,45 @@ public class WebSocketController : MonoBehaviour
         Reader = reader;
     }
 
-    void Start()
+    async void Start()
     {
+        if (AutoCreateSession)
+        {
+            CreateSessionRequest = UnityWebRequest.Get(LaunchString);
+            CreateSessionRequest.SendWebRequest().completed += async _ => 
+            {
+                var regex = new Regex("[^\"]+");
+                SessionId = regex.Match(CreateSessionRequest.downloadHandler.text).Value;
+                await EstablishConnectionAsync();
+            };
+            return;
+        }
+        await EstablishConnectionAsync();
+    }
+
+    private async Task EstablishConnectionAsync()
+    {
+        SessionFound = true;
         WebSocket = new WebSocket(string.Concat(ConnectionString, SessionId));
         WebSocket.OnError += (err) => Debug.Log(err);
         WebSocket.OnMessage += OnMessage;
-        WebSocket.Connect();
+        await WebSocket.Connect();
     }
 
-    void Update()
+    async void Update()
     {
+        if (!SessionFound)
+        {
+            return;
+        }
         if (WebSocket.State == WebSocketState.Open && Math.Abs(CurrentAngle - JoyStick.Direction) > DirectionDelta)
         {
-            WebSocket.Send(BitConverter.GetBytes(JoyStick.Direction));
+            await WebSocket.Send(BitConverter.GetBytes(JoyStick.Direction));
             CurrentAngle = JoyStick.Direction;
         }
-        WebSocket.DispatchMessageQueue();
+        #if !UNITY_WEBGL || UNITY_EDITOR
+            WebSocket.DispatchMessageQueue();
+        #endif
     }
 
     public void OnMessage(byte[] buffer)

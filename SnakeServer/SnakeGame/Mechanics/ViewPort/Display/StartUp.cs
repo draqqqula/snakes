@@ -14,6 +14,5 @@ internal static class StartUp
     {
         services.AddSingleton<ViewPortDisplayHelper>();
         services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<ViewPortDisplayHelper>());
-        services.AddSingleton<IOutputService<ClientCommandWrapper>>(provider => provider.GetRequiredService<ViewPortDisplayHelper>());
     }
 }

@@ -54,6 +54,7 @@ internal class SlimeSpawner(
             ApplyAttraction(group.Value, context.DeltaTime);
             var balance = group.Value
                 .Sum(it => it.Value);
+            group.Key.Score = balance;
             group.Key.Area.Radius = MinRadius + MathF.Max(0, MathF.Sqrt(balance));
         }
     }

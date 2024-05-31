@@ -30,7 +30,7 @@ public class FrameDisplay : MonoBehaviour
 
         ApplyUpdateEvents(message.PositionEventsLength, message.PositionEvents, 
             it => it.Value.Id,
-            (frame, obj) => EnsureEnabled(obj).transform.position = Convert(frame.Value.Position, Scale));
+            (frame, obj) => ChangeXY(EnsureEnabled(obj).transform, frame.Value.Position));
 
         ApplyUpdateEvents(message.AngleEventsLength, message.AngleEvents,
             it => it.Value.Id,
@@ -86,7 +86,7 @@ public class FrameDisplay : MonoBehaviour
                     var size = Convert(frame.Size, Scale);
                     if (Instances.TryGetValue(frame.Id, out var instance))
                     {
-                        instance.transform.position = position;
+                        ChangeXY(instance.transform, frame.Position);
                         instance.transform.rotation = rotation;
                         instance.transform.localScale = size;
                         continue;
@@ -108,6 +108,11 @@ public class FrameDisplay : MonoBehaviour
         return obj;
     }
 
+    private void ChangeXY(Transform transform, Vec2 newPosition)
+    {
+        transform.position = new Vector3(newPosition.X * Scale.x, newPosition.Y * Scale.y, transform.position.z);
+    }
+
     private Vector3 Convert(Vec2 vec2, Vector2 scale)
     {
         return new Vector3(vec2.X * scale.x, vec2.Y * scale.y, 0);
@@ -115,7 +120,7 @@ public class FrameDisplay : MonoBehaviour
 
     private Quaternion Convert(float angle)
     {
-        return Quaternion.Euler(0, 0, Mathf.Rad2Deg * angle);
+        return Quaternion.Euler(0, 0, Mathf.Rad2Deg * angle * MathF.Sign(Scale.x) * MathF.Sign(Scale.y));
     }
 
     private void ApplyEvents<T>(int length, 

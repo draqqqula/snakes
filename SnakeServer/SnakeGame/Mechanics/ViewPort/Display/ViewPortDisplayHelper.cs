@@ -1,27 +1,23 @@
 ﻿using ServerEngine.Interfaces;
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
+using SnakeGame.Common;
 using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Frames;
+using SnakeGame.Models.Gameplay;
+using SnakeGame.Services;
 using SnakeGame.Services.Output;
 using SnakeGame.Services.Output.Commands;
 
 namespace SnakeGame.Mechanics.ViewPort.Display;
 
-internal class ViewPortDisplayHelper(Dictionary<ClientIdentifier, ViewPort> ViewPorts, FrameFactory Factory) : IUpdateService, IOutputService<ClientCommandWrapper>
+internal class ViewPortDisplayHelper(
+    Dictionary<ClientIdentifier, ViewPort> ViewPorts, 
+    FrameFactory Factory, 
+    CommandSender Sender, 
+    Dictionary<TeamColor, TeamContext> Teams) : IUpdateService
 {
     private readonly Dictionary<ViewPort, ViewDisplay> _displayObjects = [];
-
-    private readonly List<ClientCommandWrapper> Commands = [];
-
-    public IEnumerable<ClientCommandWrapper> Pass()
-    {
-        foreach(var command in Commands)
-        {
-            yield return command;
-        }
-        Commands.Clear();
-    }
 
     public void Update(IGameContext context)
     {
@@ -36,19 +32,47 @@ internal class ViewPortDisplayHelper(Dictionary<ClientIdentifier, ViewPort> View
             }
             else
             {
+                var team = Teams.FirstOrDefault(it => it.Value.Members.Contains(viewPort.Key));
                 display = new ViewDisplay()
                 {
-                    Transform = Factory.Create("viewport", viewPort.Value.Transform.ReadOnly),
+                    Transform = Factory.Create($"viewport_{team.Key}", viewPort.Value.Transform.ReadOnly),
                 };
-                Commands.Add(new ClientCommandWrapper()
-                {
-                    Id = viewPort.Key,
-                    Command = new AttachCameraCommand()
-                    {
-                        FrameId = display.Transform.Id.Value
-                    }
-                });
+                AttachCameraCommand.To(viewPort.Key, Sender, display.Transform.Id.Value);
+                UpdateMinimapCommand.To(viewPort.Key, Sender, display.Transform.Id.Value);
+
+                PinTeamAreas(viewPort.Key);
+                ExchangeWithTeam(viewPort.Key, display);
+
                 _displayObjects.Add(viewPort.Value, display);
+            }
+        }
+    }
+
+    private void PinTeamAreas(ClientIdentifier id)
+    {
+        foreach(var team in Teams.Values)
+        {
+            UpdateMinimapCommand.To(id, Sender, team.Area.Transform.Id.Value);
+        }
+    }
+
+    private void ExchangeWithTeam(ClientIdentifier clientId, ViewDisplay targetDisplay)
+    {
+        var team = Teams.FirstOrDefault(it => it.Value.Members.Contains(clientId));
+
+        if (team.Value is null || team.Value.Members.Count == 1)
+        {
+            return;
+        }
+
+        foreach (var memberId in team.Value.Members.Except([clientId]))
+        {
+            UpdateMinimapCommand.To(memberId, Sender, targetDisplay.Transform.Id.Value);
+
+            if (ViewPorts.TryGetValue(memberId, out var vp) &&
+                _displayObjects.TryGetValue(vp, out var memberDisplay))
+            {
+                UpdateMinimapCommand.To(clientId, Sender, memberDisplay.Transform.Id.Value);
             }
         }
     }

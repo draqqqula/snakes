@@ -19,7 +19,7 @@ public class JoystickBehaviour : MonoBehaviour
 
     void Start()
     {
-        CanvasRectangle = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
+        CanvasRectangle = GetComponent<Canvas>().GetComponent<RectTransform>();
         DefaultPosition = Body.anchoredPosition;
     }
 

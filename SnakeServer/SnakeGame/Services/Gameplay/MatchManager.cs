@@ -5,11 +5,19 @@ using SnakeGame.Common;
 using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Frames;
 using SnakeGame.Models.Gameplay;
+using SnakeGame.Services.Output.Commands;
 using System.Numerics;
 
 namespace SnakeGame.Services.Gameplay;
 
-internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamColor, TeamContext> Teams, FrameFactory Factory) : IUpdateService, IStartUpService, ISessionService
+internal class MatchManager(
+    MatchConfiguration Configuration, 
+    Dictionary<TeamColor, TeamContext> Teams, 
+    FrameFactory Factory,
+    CommandSender Sender,
+    IInternalSessionController InternalController
+    ) : 
+    IUpdateService, IStartUpService, ISessionService
 {
     private const float AreaDistance = 200;
     private readonly Vector2[] Locations = 
@@ -20,6 +28,9 @@ internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamCol
             new Vector2(-1, 1) * AreaDistance
         ];
 
+
+    private const float GraceTime = 5;
+    private bool OnGrace { get; set; } = false;
     private bool MatchEnded { get; set; } = false;
     private TimeSpan Timer { get; set; } = TimeSpan.Zero;
 
@@ -29,7 +40,7 @@ internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamCol
         {
             var area = new TeamArea()
             {
-                Transform = Factory.Create("area", new Transform()
+                Transform = Factory.Create($"area_{color}", new Transform()
                 {
                     Angle = 0f,
                     Position = Locations[index],
@@ -42,6 +53,7 @@ internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamCol
 
     public void Start(IGameContext context)
     {
+        Timer = Configuration.Duration;
         if (Configuration.Mode == GameMode.Dual)
         {
             AddTeams(TeamColor.Red, TeamColor.Blue);
@@ -54,14 +66,21 @@ internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamCol
 
     public void Update(IGameContext context)
     {
-        if (MatchEnded)
+        Timer -= TimeSpan.FromSeconds((double)context.DeltaTime);
+
+        if (Timer <= TimeSpan.Zero)
         {
-            return;
-        }
-        Timer += TimeSpan.FromSeconds((double)context.DeltaTime);
-        if (Timer > Configuration.Duration)
-        {
-            MatchEnded = true;
+            if (OnGrace)
+            {
+                MatchEnded = true;
+                InternalController.Finish();
+            }
+            else
+            {
+                InternalController.SetTimeScale(0.5f);
+                Timer = TimeSpan.FromSeconds(GraceTime);
+                OnGrace = true;
+            }
         }
     }
 
@@ -76,6 +95,7 @@ internal class MatchManager(MatchConfiguration Configuration, Dictionary<TeamCol
             return;
         }
         team.Members.Add(id);
+        UpdateTimerCommand.To(id, Sender, Timer);
     }
 
     public void OnLeave(IGameContext context, ClientIdentifier id)

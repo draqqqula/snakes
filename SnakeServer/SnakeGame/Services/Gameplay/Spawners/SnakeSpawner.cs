@@ -63,11 +63,11 @@ internal class SnakeSpawner(
         };
         var head = new Mechanics.Bodies.SquareBody() 
         { 
-            Transform = FrameFactory.Create("head", transform) 
+            Transform = FrameFactory.Create($"head_{team.Key}", transform) 
         };
         var body = new SnakeBodypart()
         {
-            Transform = FrameFactory.Create("body0", transform),
+            Transform = FrameFactory.Create($"body0_{team.Key}", transform),
             Tier = 0,
         };
 
