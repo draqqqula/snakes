@@ -6,22 +6,19 @@ using SnakeGame.Models.Input.Internal;
 
 namespace SnakeGame.Services.Input;
 
-internal class MovementDirectionInputFormatter(
-    IEnumerable<IInputService<MovementDirectionInput>> services
-    ) : IInputFormatter<BinaryInput>
+internal class MovementDirectionInputFormatter : SignatureInputFormatter<MovementDirectionInput>
 {
-    public bool TryResolve(BinaryInput input, ClientIdentifier id)
+    public MovementDirectionInputFormatter(IEnumerable<IInputService<MovementDirectionInput>> services) : base(services)
     {
-        var model = new MovementDirectionInput()
-        {
-            Angle = BitConverter.ToSingle(input.Data)
-        };
-        foreach (var service in services)
-        {
-            service.OnInput(id, model);
-        }
-        return true;
     }
 
+    public override byte Signature => 3;
 
+    public override MovementDirectionInput Deserialize(BinaryReader reader)
+    {
+        return new MovementDirectionInput()
+        {
+            Angle = reader.ReadSingle()
+        };
+    }
 }

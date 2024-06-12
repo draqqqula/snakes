@@ -9,6 +9,8 @@ namespace ServerEngine;
 
 internal class SessionHandler
 {
+    internal volatile int PlayerCounter = 0;
+
     internal volatile int TickCounter = 0;
 
     internal volatile bool Closed = false;

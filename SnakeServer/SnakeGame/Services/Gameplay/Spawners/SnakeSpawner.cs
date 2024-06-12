@@ -12,6 +12,7 @@ using SnakeGame.Mechanics.ViewPort;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Models.Input.Internal;
 using SnakeGame.Models.Output.Internal;
+using SnakeGame.Systems.Respawn;
 using System.Numerics;
 
 namespace SnakeGame.Services.Gameplay.FrameDrivers;
@@ -22,7 +23,7 @@ internal class SnakeSpawner(
     Dictionary<TeamColor, TeamContext> Teams,
     FrameFactory FrameFactory
     ) :
-    ISessionService, IInputService<MovementDirectionInput>
+    ISessionService, IInputService<MovementDirectionInput>, IUpdateService
 {
     private Random SpawnPositionRandom { get; } = new Random();
     public void OnInput(ClientIdentifier id, MovementDirectionInput data)
@@ -35,11 +36,9 @@ internal class SnakeSpawner(
 
     public void OnJoin(IGameContext context, ClientIdentifier id)
     {
-        var character = Spawn(id);
-        Players.TryAdd(id, character);
     }
 
-    public SnakeCharacter Spawn(ClientIdentifier id)
+    public SnakeCharacter Spawn(ClientIdentifier id, IAbilityFactory abilityFactory)
     {
         var team = Teams.Where(it => it.Value.Members.Contains(id)).First();
         var position = 
@@ -77,9 +76,29 @@ internal class SnakeSpawner(
             Head = head,
             Body = [ body ],
             MovementDirection = angle,
-            Team = team.Key
+            Team = team.Key,
+            ClientId = id
         };
+        character.Ability = abilityFactory.Create(character);
+        Players.TryAdd(id, character);
         return character;
+    }
+
+    public void Despawn(ClientIdentifier id)
+    {
+        var snake = Players[id];
+        foreach (var segment in snake.Body)
+        {
+            Pickups.Add(new PickupPoints()
+            {
+                Transform = FrameFactory.Create($"pickup{segment.Tier}", segment.Transform.ReadOnly),
+                Tier = segment.Tier,
+            });
+            segment.Transform.Dispose();
+        }
+        Players.Remove(id);
+        snake.Head.Transform.Dispose();
+        snake.Transform.Dispose();
     }
 
     public void OnLeave(IGameContext context, ClientIdentifier id)
@@ -97,5 +116,13 @@ internal class SnakeSpawner(
         Players.Remove(id);
         snake.Head.Transform.Dispose();
         snake.Transform.Dispose();
+    }
+
+    public void Update(IGameContext context)
+    {
+        foreach (var character in Players.Values)
+        {
+            character.Update(context.DeltaTime);
+        }
     }
 }

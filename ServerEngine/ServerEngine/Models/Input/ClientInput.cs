@@ -18,11 +18,22 @@ public record ClientInput<T> : ClientInput
     internal override void Broadcast(IServiceProvider services)
     {
         var formatters = services.GetServices<IInputFormatter<T>>();
-        foreach (var formatter in formatters)
+        while (true) 
         {
-            if (formatter.TryResolve(Data, ClientId))
+            var isResolved = false;
+            foreach (var formatter in formatters)
             {
-                return;
+                var result = formatter.TryResolve(Data, ClientId);
+                switch (result)
+                {
+                    case ResolveResult.Success: return;
+                    case ResolveResult.Error: return;
+                    case ResolveResult.Proceed: isResolved = true; break;
+                }
+            }
+            if (!isResolved)
+            {
+                break;
             }
         }
     }

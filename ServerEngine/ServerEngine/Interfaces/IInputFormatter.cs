@@ -4,5 +4,5 @@ namespace ServerEngine.Interfaces;
 
 public interface IInputFormatter<T>
 {
-    public bool TryResolve(T input, ClientIdentifier id);
+    public ResolveResult TryResolve(T input, ClientIdentifier id);
 }

@@ -14,6 +14,8 @@ internal class SessionConnection(SessionHandler handler, ClientIdentifier id) : 
 
     private void Disconnect()
     {
+        if (Closed) return;
+        _handler.PlayerCounter -= 1;
         _handler.LeaveQueue.Enqueue(_id);
         Closed = true;
     }

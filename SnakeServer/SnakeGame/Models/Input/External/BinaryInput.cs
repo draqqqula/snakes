@@ -2,5 +2,5 @@
 
 public struct BinaryInput
 {
-    public required byte[] Data { get; init; }
+    public required BinaryReader Data { get; init; }
 }

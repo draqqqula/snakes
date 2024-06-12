@@ -4,6 +4,7 @@ using ServerEngine.Models;
 using SnakeGame.Mechanics.Collision;
 using SnakeGame.Mechanics.Collision.Shapes;
 using SnakeGame.Mechanics.Frames;
+using SnakeGame.Mechanics.Respawn;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Services.Gameplay.FrameDrivers;
 
@@ -15,7 +16,8 @@ internal class SnakeCollisionManager
     ICollisionChecker collision,
     List<PickupPoints> Pickups,
     FrameFactory FrameFactory,
-    SnakeSpawner SnakeSpawner
+    SnakeSpawner SnakeSpawner,
+    RespawnManager RespawnManager
     ) : IUpdateService
 {
     public void Update(IGameContext context)
@@ -31,9 +33,8 @@ internal class SnakeCollisionManager
         {
             if (snake.Value.Body.Count == 0)
             {
-                snake.Value.Transform.Dispose();
-                snake.Value.Head.Transform.Dispose();
-                Players[snake.Key] = SnakeSpawner.Spawn(snake.Key);
+                SnakeSpawner.Despawn(snake.Key);
+                RespawnManager.QueueRespawn(snake.Key);
             }
         }
     }

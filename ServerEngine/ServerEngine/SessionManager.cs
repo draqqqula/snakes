@@ -7,9 +7,11 @@ namespace ServerEngine;
 
 internal class SessionManager : ISessionManager
 {
-    private const int FixedTimeStep = 20;
+    private const int FixedTimeStep = 16;
     private readonly Task _loopTask;
     private readonly SessionHandler _handler;
+
+    public int ConnectedCount => _handler.PlayerCounter;
 
     public SessionManager(SessionHandler handler, GameState state)
     {
@@ -27,6 +29,7 @@ internal class SessionManager : ISessionManager
     public async Task<ISessionConnection> ConnectAsync(ClientIdentifier id)
     {
         _handler.JoinQueue.Enqueue(id);
+        _handler.PlayerCounter += 1;
         return new SessionConnection(_handler, id);
     }
 

@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Hosting;
+using SessionApi.Filters;
 using SnakeGame;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddGameApplication();
 builder.Services.AddGameLauncher();
-builder.Services.AddCors();
+
 
 var app = builder.Build();
 
@@ -15,12 +18,11 @@ var webSocketOptions = new WebSocketOptions
     KeepAliveInterval = TimeSpan.FromMinutes(2)
 };
 
+app.UseCors();
+app.UseOptions();
 app.UseWebSockets(webSocketOptions);
 // </snippet_UseWebSockets>
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-app.UseCors();
+//app.UseHttpsRedirection();
 
 app.MapControllers();
 

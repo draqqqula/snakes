@@ -36,7 +36,7 @@ internal class PickupSpawner(
                 {
                     tile.Transform.Angle += context.DeltaTime;
                     Pickups.Remove(tile);
-                    player.Value.JoinPart(tile.Tier, Factory);
+                    player.Value.JoinLast(tile.Tier, Factory);
                     tile.Transform.Dispose();
                 }
             }

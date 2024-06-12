@@ -150,7 +150,7 @@ internal class SlimeSpawner(
         }
         else if (character.MaxTier >= slime.Tier)
         {
-            character.JoinPart(slime.Tier, Factory);
+            character.JoinLast(slime.Tier, Factory);
             Dispose(slime);
         }
         else
