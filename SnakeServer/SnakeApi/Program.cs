@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.StaticFiles;
 using SessionApi.Filters;
 using SnakeGame;
 using System.Net;
@@ -18,7 +19,16 @@ var webSocketOptions = new WebSocketOptions
     KeepAliveInterval = TimeSpan.FromMinutes(2)
 };
 
+var staticContentTypeProvider = new FileExtensionContentTypeProvider();
+staticContentTypeProvider.Mappings.Add(".data", "application/octet-stream");
+var staticOptions = new StaticFileOptions()
+{
+    ContentTypeProvider = staticContentTypeProvider
+};
+
 app.UseCors();
+app.UseDefaultFiles();
+app.UseStaticFiles(staticOptions);
 app.UseOptions();
 app.UseWebSockets(webSocketOptions);
 // </snippet_UseWebSockets>

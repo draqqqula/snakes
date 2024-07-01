@@ -3,6 +3,7 @@ using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
 using SnakeCore.Extensions;
 using SnakeGame.Models.Gameplay;
+using System.Drawing;
 using System.Numerics;
 
 namespace SnakeGame.Systems.Movement;
@@ -10,6 +11,8 @@ namespace SnakeGame.Systems.Movement;
 internal class TrailMovementManager(Dictionary<ClientIdentifier, SnakeCharacter> Characters) : IUpdateService
 {
     private const float HeadOffset = 4f;
+    public RectangleF PlayableZone = new RectangleF(-250, -250, 500, 500);
+
     public void Update(IGameContext context)
     {
         foreach (var character in Characters.Values)
@@ -23,9 +26,20 @@ internal class TrailMovementManager(Dictionary<ClientIdentifier, SnakeCharacter>
             var direction = MathEx.AngleToVector(character.Transform.Angle);
             var distance = character.Speed * direction * context.DeltaTime;
 
+            if (!PlayableZone.Contains((PointF)(character.Transform.Position + distance)))
+            {
+                character.MovementDirection = 
+                    MathEx.VectorToAngle((Vector2)(PlayableZone.Location + PlayableZone.Size / 2) - character.Transform.Position);
+            }
+
             character.Transform.Position += distance;
             character.Head.Transform.Position = character.Transform.Position + direction * HeadOffset;
             character.Head.Transform.Angle = character.Transform.Angle;
+
+            if (distance == Vector2.Zero)
+            {
+                return;
+            }
 
             var transit = new TrailNode()
             {

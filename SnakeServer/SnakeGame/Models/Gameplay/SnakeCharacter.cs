@@ -103,35 +103,6 @@ internal class SnakeCharacter : SquareBody
         ActiveSorting = true;
     }
 
-    public void JoinPart(byte tier, FrameFactory factory)
-    {
-        if (InvokeReaction(tier))
-        {
-            return;
-        }
-        var frontElement = Body.Where(it => it.Tier >= tier).LastOrDefault();
-        if (frontElement is null)
-        {
-            Body.Insert(0, new SnakeBodypart()
-            {
-                Transform = factory.Create($"body{tier}_{Team}", Transform.ReadOnly),
-                Tier = tier
-            });
-            return;
-        }
-        var tail = frontElement.Trail.LastOrDefault(new TrailSegment()
-        {
-            DistanceTraveled = 0,
-            Position = frontElement.Transform.Position,
-            Rotation = frontElement.Transform.Angle
-        });
-        Body.Insert(Body.IndexOf(frontElement) + 1, new SnakeBodypart() 
-        { 
-            Transform = factory.Create($"body{tier}_{Team}", Transform.ReadOnly),
-            Tier = tier
-        });
-    }
-
     private bool InvokeReaction(byte tier)
     {
         if (tier > 30)

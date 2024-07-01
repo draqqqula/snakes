@@ -38,7 +38,7 @@ internal class ViewPortDisplayHelper(
                     Transform = Factory.Create($"viewport_{team.Key}", viewPort.Value.Transform.ReadOnly),
                 };
                 AttachCameraCommand.To(viewPort.Key, Sender, display.Transform.Id.Value);
-                UpdateMinimapCommand.To(viewPort.Key, Sender, display.Transform.Id.Value);
+                PinIconCommand.To(viewPort.Key, Sender, display.Transform.Id.Value);
 
                 PinTeamAreas(viewPort.Key);
                 ExchangeWithTeam(viewPort.Key, display);
@@ -52,7 +52,7 @@ internal class ViewPortDisplayHelper(
     {
         foreach(var team in Teams.Values)
         {
-            UpdateMinimapCommand.To(id, Sender, team.Area.Transform.Id.Value);
+            PinIconCommand.To(id, Sender, team.Area.Transform.Id.Value);
         }
     }
 
@@ -67,12 +67,12 @@ internal class ViewPortDisplayHelper(
 
         foreach (var memberId in team.Value.Members.Except([clientId]))
         {
-            UpdateMinimapCommand.To(memberId, Sender, targetDisplay.Transform.Id.Value);
+            PinIconCommand.To(memberId, Sender, targetDisplay.Transform.Id.Value);
 
             if (ViewPorts.TryGetValue(memberId, out var vp) &&
                 _displayObjects.TryGetValue(vp, out var memberDisplay))
             {
-                UpdateMinimapCommand.To(clientId, Sender, memberDisplay.Transform.Id.Value);
+                PinIconCommand.To(clientId, Sender, memberDisplay.Transform.Id.Value);
             }
         }
     }

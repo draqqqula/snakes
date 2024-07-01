@@ -19,4 +19,15 @@ public class LaunchController : ControllerBase
         session.OnClosed += () => storage.Remove(id);
         return Ok(id);
     }
+
+    [HttpGet]
+    [Route("all")]
+    public async Task<IActionResult> GetActiveAsync(
+    [FromServices] IGameApplication game,
+    [FromServices] ISessionLauncher launcher,
+    [FromServices] ISessionStorage<Guid> storage)
+    {
+        var collection = storage.GetAll().ToArray();
+        return Ok(collection);
+    }
 }

@@ -19,11 +19,11 @@ internal class ClientViewHandler
         && ClientInactive.Contains(id));
     }
 
-    public void ApplyEvents(EventTable global, HashSet<int> visible)
+    public void ApplyEvents(EventTable events, HashSet<int> visible)
     {
         var loadCondition = (int id, EventEntry entry) => CheckLoaded(id, entry, visible);
 
-        var (globalInclude, globalExclude) = global.Split(loadCondition);
+        var (globalInclude, globalExclude) = events.Split(loadCondition);
 
         var (localInclude, localExclude) = OutsideScreen.Split(loadCondition);
 

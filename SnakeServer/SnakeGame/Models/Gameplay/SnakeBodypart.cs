@@ -12,8 +12,6 @@ internal class SnakeBodypart : SquareBody
 {
     private const float CatchDelta = 0.1f;
 
-    public float DistanceCounter = 0f;
-    public Queue<TrailSegment> Trail { get; set; } = [];
     public Trail Path { get; set; } = new Trail();
     public byte Tier { get; set; } = 0;
     public int Value => (int)Math.Pow(2, (Tier+1));
