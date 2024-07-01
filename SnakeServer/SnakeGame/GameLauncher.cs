@@ -33,6 +33,7 @@ using SnakeGame.Systems.Movement;
 using SnakeGame.Systems.Respawn;
 using SnakeGame.Systems.Service;
 using SnakeGame.Systems.Timer;
+using SnakeGame.Systems.ViewPort.Interfaces;
 
 namespace SnakeGame;
 
@@ -60,6 +61,8 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<ICollisionResolver<RotatableSquare, RotatableSquare>, RSquareToRSquareResolver>();
         services.AddSingleton<ICollisionChecker, CollisionChecker>();
 
+        services.AddSingleton<MinimapManager>();
+        services.AddSingleton<ITrackingSource>(provider => provider.GetRequiredService<MinimapManager>());
         services.AddViewProduction();
         services.AddSingleton<IOutputService<ClientCommandWrapper>, ViewOutputService>();
         services.AddOutputFabricScoped<ClientCommandWrapper, ViewPortBasedBinaryOutput, ViewPortBasedOutputTransformer>();

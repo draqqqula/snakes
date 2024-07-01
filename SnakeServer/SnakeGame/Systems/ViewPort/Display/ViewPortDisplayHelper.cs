@@ -6,6 +6,7 @@ using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Frames;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Services;
+using SnakeGame.Services.Gameplay;
 using SnakeGame.Services.Output;
 using SnakeGame.Services.Output.Commands;
 
@@ -15,6 +16,7 @@ internal class ViewPortDisplayHelper(
     Dictionary<ClientIdentifier, ViewPort> ViewPorts, 
     FrameFactory Factory, 
     CommandSender Sender, 
+    MinimapManager Minimap,
     Dictionary<TeamColor, TeamContext> Teams) : IUpdateService
 {
     private readonly Dictionary<ViewPort, ViewDisplay> _displayObjects = [];
@@ -38,7 +40,7 @@ internal class ViewPortDisplayHelper(
                     Transform = Factory.Create($"viewport_{team.Key}", viewPort.Value.Transform.ReadOnly),
                 };
                 AttachCameraCommand.To(viewPort.Key, Sender, display.Transform.Id.Value);
-                PinIconCommand.To(viewPort.Key, Sender, display.Transform.Id.Value);
+                Minimap.Pin(viewPort.Key, Sender, display.Transform.Id.Value);
 
                 PinTeamAreas(viewPort.Key);
                 ExchangeWithTeam(viewPort.Key, display);
@@ -52,7 +54,7 @@ internal class ViewPortDisplayHelper(
     {
         foreach(var team in Teams.Values)
         {
-            PinIconCommand.To(id, Sender, team.Area.Transform.Id.Value);
+            Minimap.Pin(id, Sender, team.Area.Transform.Id.Value);
         }
     }
 
@@ -67,12 +69,12 @@ internal class ViewPortDisplayHelper(
 
         foreach (var memberId in team.Value.Members.Except([clientId]))
         {
-            PinIconCommand.To(memberId, Sender, targetDisplay.Transform.Id.Value);
+            Minimap.Pin(memberId, Sender, targetDisplay.Transform.Id.Value);
 
             if (ViewPorts.TryGetValue(memberId, out var vp) &&
                 _displayObjects.TryGetValue(vp, out var memberDisplay))
             {
-                PinIconCommand.To(clientId, Sender, memberDisplay.Transform.Id.Value);
+                Minimap.Pin(clientId, Sender, memberDisplay.Transform.Id.Value);
             }
         }
     }
