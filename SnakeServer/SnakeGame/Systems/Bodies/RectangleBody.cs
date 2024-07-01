@@ -2,11 +2,11 @@
 
 namespace SnakeGame.Mechanics.Bodies;
 
-internal class RectangleBody : BodyFrame<AxisAlignedBoundingBox>
+internal class RectangleBody : BodyFrame<AABB>
 {
-    public override IEnumerable<AxisAlignedBoundingBox> GetBody()
+    public override IEnumerable<AABB> GetBody()
     {
-        yield return new AxisAlignedBoundingBox()
+        yield return new AABB()
         {
             Min = Transform.Position - Transform.Size * 0.5f,
             Max = Transform.Position + Transform.Size * 0.5f

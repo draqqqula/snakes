@@ -2,9 +2,9 @@
 
 namespace SnakeGame.Mechanics.Collision.Resolvers;
 
-internal class AABBToAABBResolver : ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox>
+internal class AABBToAABBResolver : ICollisionResolver<AABB, AABB>
 {
-    public bool IsColliding(AxisAlignedBoundingBox aabb1, AxisAlignedBoundingBox aabb2)
+    public bool IsColliding(AABB aabb1, AABB aabb2)
     {
         return aabb1.Min.X <= aabb2.Max.X &&
                    aabb1.Max.X >= aabb2.Min.X &&

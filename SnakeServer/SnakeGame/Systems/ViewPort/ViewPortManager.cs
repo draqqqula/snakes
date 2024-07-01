@@ -6,6 +6,7 @@ using SnakeGame.Mechanics.Collision;
 using SnakeGame.Mechanics.Collision.Resolvers;
 using SnakeGame.Mechanics.Collision.Shapes;
 using SnakeGame.Mechanics.Frames;
+using SnakeGame.Systems.ViewPort.Interfaces;
 using System.Numerics;
 
 namespace SnakeGame.Mechanics.ViewPort;
@@ -13,17 +14,30 @@ namespace SnakeGame.Mechanics.ViewPort;
 internal class ViewPortManager(
     Dictionary<ClientIdentifier, ViewPort> ViewPorts, 
     FrameStorage Storage,
-    ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox> Collision,
+    ICollisionResolver<AABB, AABB> Collision,
     FrameFactory Factory
     ) : 
-    ISessionService, IUpdateService
+    ISessionService, ITrackingSource
 {
     public const float ViewPortSize = 200f;
-    public Dictionary<ClientIdentifier, List<int>> Intersections { get; } = [];
-    public IEnumerable<KeyValuePair<ClientIdentifier, List<int>>> ActiveIntersections => Intersections.Where(it => ViewPorts[it.Key].Enabled);
+    public IEnumerable<int> GetTracked(ClientIdentifier id)
+    {
+        var view = ViewPorts[id];
+        foreach (var frame in Storage.GetAll())
+        {
+            if (Collision.IsColliding(view.GetLayout(), new AABB()
+            {
+                Min = frame.Transform.Position - frame.Transform.Size * 0.5f,
+                Max = frame.Transform.Position + frame.Transform.Size * 0.5f
+            }))
+            {
+                yield return frame.Id;
+            }
+        }
+    }
+
     public void OnJoin(IGameContext context, ClientIdentifier id)
     {
-        Intersections.Add(id, []);
         ViewPorts.Add(id, new ViewPort() 
         { 
             Transform = new TransformObject() 
@@ -37,26 +51,6 @@ internal class ViewPortManager(
 
     public void OnLeave(IGameContext context, ClientIdentifier id)
     {
-        Intersections.Remove(id);
         ViewPorts.Remove(id);
-    }
-
-    public void Update(IGameContext context)
-    {
-        foreach (var view in ViewPorts)
-        {
-            Intersections[view.Key].Clear();
-            foreach (var frame in Storage.GetAll())
-            {
-                if (Collision.IsColliding(view.Value.GetLayout(), new AxisAlignedBoundingBox()
-                {
-                    Min = frame.Transform.Position - frame.Transform.Size * 0.5f, 
-                    Max = frame.Transform.Position + frame.Transform.Size * 0.5f
-                }))
-                {
-                    Intersections[view.Key].Add(frame.Id);
-                }
-            }
-        }
     }
 }

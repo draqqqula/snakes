@@ -9,12 +9,12 @@ internal interface IBodyComponent<TShape> where TShape : IFlatShape
 
 internal static class BodyExtensions
 {
-    public static AxisAlignedBoundingBox GetLayout<T>(this IBodyComponent<T> body) where T : IFlatShape
+    public static AABB GetLayout<T>(this IBodyComponent<T> body) where T : IFlatShape
     {
         var bounds = body.GetBody().Select(it => it.GetBounds());
         var max = bounds.Max(it => it.Max);
         var min = bounds.Min(it => it.Min);
-        return new AxisAlignedBoundingBox()
+        return new AABB()
         {
             Max = max,
             Min = min

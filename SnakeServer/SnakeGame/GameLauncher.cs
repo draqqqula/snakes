@@ -31,6 +31,7 @@ using SnakeGame.Services.Output;
 using SnakeGame.Services.Output.Services;
 using SnakeGame.Systems.Movement;
 using SnakeGame.Systems.Respawn;
+using SnakeGame.Systems.Service;
 using SnakeGame.Systems.Timer;
 
 namespace SnakeGame;
@@ -39,6 +40,10 @@ public class GameLauncher : ISessionLauncher
 {
     public void Prepare(IServiceCollection services)
     {
+        services.AddSingleton<ClientRegistry>();
+        services.AddSingleton<IClientRegistry>(provider => provider.GetRequiredService<ClientRegistry>());
+        services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<ClientRegistry>());
+
         services.AddSingleton<TimerScheduler>();
         services.AddSingleton<ITimerScheduler>(provider => provider.GetRequiredService<TimerScheduler>());
         services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<TimerScheduler>());
@@ -51,7 +56,7 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<Dictionary<ClientIdentifier, SnakeCharacter>>();
 
         services.AddSingleton<ICollisionResolver<Polygon, Polygon>, PolygonToPolygonResolver>();
-        services.AddSingleton<ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox>, AABBToAABBResolver>();
+        services.AddSingleton<ICollisionResolver<AABB, AABB>, AABBToAABBResolver>();
         services.AddSingleton<ICollisionResolver<RotatableSquare, RotatableSquare>, RSquareToRSquareResolver>();
         services.AddSingleton<ICollisionChecker, CollisionChecker>();
 

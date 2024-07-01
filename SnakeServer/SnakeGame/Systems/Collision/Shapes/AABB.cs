@@ -2,7 +2,7 @@
 
 namespace SnakeGame.Mechanics.Collision.Shapes;
 
-internal readonly record struct AxisAlignedBoundingBox : IFlatShape
+internal readonly record struct AABB : IFlatShape
 {
     public Vector2 Min { get; init; }
     public Vector2 Max { get; init; }
@@ -12,7 +12,7 @@ internal readonly record struct AxisAlignedBoundingBox : IFlatShape
         return Polygon.FromVertexes(Min, new Vector2(Min.Y, Max.X), Max, new Vector2(Min.X, Max.Y));
     }
 
-    public AxisAlignedBoundingBox GetBounds()
+    public AABB GetBounds()
     {
         return this;
     }

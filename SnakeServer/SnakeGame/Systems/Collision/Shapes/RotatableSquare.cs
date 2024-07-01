@@ -71,7 +71,7 @@ internal partial record struct RotatableSquare : IFlatShape
         };
     }
 
-    public AxisAlignedBoundingBox GetBounds()
+    public AABB GetBounds()
     {
         var minX = float.MaxValue;
         var minY = float.MaxValue;
@@ -98,16 +98,16 @@ internal partial record struct RotatableSquare : IFlatShape
             }
         }
 
-        return new AxisAlignedBoundingBox()
+        return new AABB()
         {
             Min = new Vector2(minX, minY),
             Max = new Vector2(maxX, maxY)
         };
     }
 
-    public AxisAlignedBoundingBox GetUnrotated()
+    public AABB GetUnrotated()
     {
-        return new AxisAlignedBoundingBox()
+        return new AABB()
         {
             Min = Position - Vector2.One * Size,
             Max = Position + Vector2.One * Size

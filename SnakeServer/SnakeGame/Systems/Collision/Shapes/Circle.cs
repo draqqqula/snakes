@@ -25,9 +25,9 @@ internal readonly struct Circle : IFlatShape
         return Polygon.FromVertexes(vertexList);
     }
 
-    public AxisAlignedBoundingBox GetBounds()
+    public AABB GetBounds()
     {
-        return new AxisAlignedBoundingBox()
+        return new AABB()
         {
             Min = Position - new Vector2(Radius, Radius),
             Max = Position + new Vector2(Radius, Radius)

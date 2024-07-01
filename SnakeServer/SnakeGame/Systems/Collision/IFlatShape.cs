@@ -4,6 +4,6 @@ namespace SnakeGame.Mechanics.Collision;
 
 internal interface IFlatShape
 {
-    public AxisAlignedBoundingBox GetBounds();
+    public AABB GetBounds();
     public Polygon AsPolygon();
 }

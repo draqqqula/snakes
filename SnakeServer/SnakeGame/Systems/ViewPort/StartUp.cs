@@ -11,6 +11,8 @@ using ServerEngine.Models;
 using SnakeGame.Models.Output.Internal;
 using SnakeGame.Services.Output.Services;
 using SnakeGame.Services.Output;
+using SnakeGame.Systems.ViewPort.Interfaces;
+using SnakeGame.Systems.ViewPort;
 
 namespace SnakeGame.Mechanics.ViewPort;
 
@@ -22,7 +24,8 @@ internal static class StartUp
         services.AddSingleton<ITableProvider>(provider => provider.GetRequiredService<FrameRepository>());
         services.AddSingleton<ViewPortManager>();
         services.AddSingleton<IUpdateService, ViewPortToCharacterBinder>();
-        services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<ViewPortManager>());
+        services.AddSingleton<ITrackingSource>(provider => provider.GetRequiredService<ViewPortManager>());
         services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<ViewPortManager>());
+        services.AddSingleton<TrackingAggregator>();
     }
 }

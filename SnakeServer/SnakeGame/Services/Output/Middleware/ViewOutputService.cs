@@ -6,10 +6,12 @@ using SnakeGame.Mechanics.Frames.Output.Interfaces;
 using SnakeGame.Mechanics.ViewPort;
 using SnakeGame.Models.Output.Internal;
 using SnakeGame.Services.Output.Commands;
+using SnakeGame.Systems.Service;
+using SnakeGame.Systems.ViewPort;
 
 namespace SnakeGame.Services.Output.Services;
 
-internal class ViewOutputService(ViewPortManager Manager, FrameStorage Storage, ITableProvider Provider) :
+internal class ViewOutputService(IClientRegistry Registry, TrackingAggregator Aggregator, FrameStorage Storage, ITableProvider Provider) :
     IOutputService<ClientCommandWrapper>
 {
     private readonly Dictionary<ClientIdentifier, ClientViewHandler> _views = [];
@@ -19,25 +21,26 @@ internal class ViewOutputService(ViewPortManager Manager, FrameStorage Storage, 
         var globalChanges = Provider.Take();
         var state = Storage.GetAll();
 
-        foreach (var viewSet in Manager.ActiveIntersections)
+        foreach (var client in Registry.Online)
         {
-            var hashSet = viewSet.Value.ToHashSet();
+            var tracked = Aggregator.GetTracked(client).ToHashSet();
+
             ClientViewHandler? handler;
 
-            if (_views.TryGetValue(viewSet.Key, out handler))
+            if (_views.TryGetValue(client, out handler))
             {
-                handler.ApplyEvents(globalChanges, hashSet);
+                handler.ApplyEvents(globalChanges, tracked);
             }
             else
             {
                 handler = new ClientViewHandler();
-                handler.ApplyEvents(EventTable.FromState(state), hashSet);
-                _views.Add(viewSet.Key, handler);
+                handler.ApplyEvents(EventTable.FromState(state), tracked);
+                _views.Add(client, handler);
             }
 
             yield return new ClientCommandWrapper()
             {
-                Id = viewSet.Key,
+                Id = client,
                 Command = new EventSourcingCommand()
                 {
                     Table = handler.OnScreen.Join(handler.ToSleep)

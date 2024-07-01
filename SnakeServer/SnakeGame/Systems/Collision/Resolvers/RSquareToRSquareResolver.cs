@@ -10,7 +10,7 @@ namespace SnakeGame.Mechanics.Collision.Resolvers
 {
     internal class RSquareToRSquareResolver
         (ICollisionResolver<Polygon, Polygon> PolygonResolver,
-        ICollisionResolver<AxisAlignedBoundingBox, AxisAlignedBoundingBox> AABBResolver)
+        ICollisionResolver<AABB, AABB> AABBResolver)
         : ICollisionResolver<RotatableSquare, RotatableSquare>
     {
         public bool IsColliding(RotatableSquare square1, RotatableSquare square2)
