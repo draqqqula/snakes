@@ -64,11 +64,6 @@ internal class TrailMovementManager(Dictionary<ClientIdentifier, SnakeCharacter>
                     transit = part.Path.Cut(extra);
                 }
             }
-            
-            if (character.Body.Count > 0)
-            {
-                character.Body[character.Body.Count - 1].Path.Clear();
-            }
         }
     }
 }

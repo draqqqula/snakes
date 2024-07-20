@@ -29,7 +29,10 @@ internal class SnakeCharacter : SquareBody
     public float RotationSpeed { get; set; } = MathF.PI * 2f;
     public float ShrinkSpeed { get; set; } = 80f;
     public bool OnBase { get; set; } = false;
-    public float SortingInterval { get; set; } = 0.5f;
+    public float SortingIntervalMax { get; set; } = 0.5f;
+    public float SortingIntervalMin { get; set; } = 0.1f;
+    public float SortingIntervalCurrent { get; set; } = 0.5f;
+    public float SortingIntervalDecrementStep { get; set; } = 0.05f;
 
     #endregion
 
@@ -47,11 +50,13 @@ internal class SnakeCharacter : SquareBody
 
         if (!ActiveSorting)
         {
+            SortingIntervalCurrent = SortingIntervalMax;
             return;
         }
-        if (SortingTimer > SortingInterval)
+        if (SortingTimer > SortingIntervalCurrent)
         {
             SortingTimer = 0f;
+            SortingIntervalCurrent = MathF.Max(SortingIntervalCurrent - SortingIntervalDecrementStep, SortingIntervalMin);
             ActiveSorting = OneAtATime(Body.Count);
             return;
         }
@@ -70,6 +75,11 @@ internal class SnakeCharacter : SquareBody
         {
             Body[index - 1] = nextToLast;
             Body[index - 2] = last;
+            var transit = last.Path.Cut(last.Path.TotalLength);
+            if (transit is not null)
+            {
+                nextToLast.Path.ExtendBack(transit);
+            }
             return true;
         }
         else if (last.Tier == nextToLast.Tier)
@@ -93,6 +103,7 @@ internal class SnakeCharacter : SquareBody
     public void JoinLast(byte tier, FrameFactory factory)
     {
         var last = Body.LastOrDefault();
+        last?.Path.Clear();
         var transform = last?.Transform.ReadOnly ?? Transform.ReadOnly;
         var newBodypart = new SnakeBodypart()
         {
