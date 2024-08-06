@@ -23,7 +23,9 @@ internal static class StartUp
         services.AddSingleton<Dictionary<ClientIdentifier, ViewPort>>();
         services.AddSingleton<ITableProvider>(provider => provider.GetRequiredService<FrameRepository>());
         services.AddSingleton<ViewPortManager>();
-        services.AddSingleton<IUpdateService, ViewPortToCharacterBinder>();
+        services.AddSingleton<ViewPortBinder>();
+        services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<ViewPortBinder>());
+        services.AddSingleton<IViewPortBinder>(provider => provider.GetRequiredService<ViewPortBinder>());
         services.AddSingleton<ITrackingSource>(provider => provider.GetRequiredService<ViewPortManager>());
         services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<ViewPortManager>());
         services.AddSingleton<TrackingAggregator>();

@@ -1,4 +1,4 @@
-﻿using SnakeGame.Models.Gameplay;
+﻿using SnakeGame.Systems.GameObjects.Characters;
 using SnakeGame.Systems.Respawn;
 
 namespace SnakeGame.Services.Gameplay.Abilities;

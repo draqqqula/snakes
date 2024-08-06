@@ -1,5 +1,5 @@
-﻿using SnakeGame.Models.Gameplay;
-using SnakeGame.Services.Output.Commands;
+﻿using SnakeGame.Services.Output.Commands;
+using SnakeGame.Systems.GameObjects.Characters;
 using SnakeGame.Systems.Timer;
 
 namespace SnakeGame.Services.Gameplay.Abilities;

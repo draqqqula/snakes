@@ -1,5 +1,5 @@
-﻿using SnakeGame.Models.Gameplay;
-using SnakeGame.Services.Gameplay.Abilities;
+﻿using SnakeGame.Services.Gameplay.Abilities;
+using SnakeGame.Systems.GameObjects.Characters;
 
 namespace SnakeGame.Systems.Respawn;
 

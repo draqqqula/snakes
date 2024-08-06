@@ -9,7 +9,7 @@ internal class GameContext(IServiceProvider provider) : IGameContext
 
     public float DeltaTime { get; internal set; }
 
-    public T Using<T>() where T : IGameManager
+    public T Using<T>()
     {
         return _provider.GetRequiredService<T>();
     }

@@ -29,11 +29,17 @@ using SnakeGame.Services.Gameplay.Spawners;
 using SnakeGame.Services.Input;
 using SnakeGame.Services.Output;
 using SnakeGame.Services.Output.Services;
+using SnakeGame.Systems.GameObjects;
+using SnakeGame.Systems.GameObjects.Characters;
+using SnakeGame.Systems.Jobs;
 using SnakeGame.Systems.Movement;
 using SnakeGame.Systems.Respawn;
+using SnakeGame.Systems.Serializers;
 using SnakeGame.Systems.Service;
+using SnakeGame.Systems.Statistics;
 using SnakeGame.Systems.Timer;
 using SnakeGame.Systems.ViewPort.Interfaces;
+using SnakeGameAssets;
 
 namespace SnakeGame;
 
@@ -41,6 +47,14 @@ public class GameLauncher : ISessionLauncher
 {
     public void Prepare(IServiceCollection services)
     {
+        services.AddCommonSerializers();
+
+        services.AddRuntimeCommands();
+
+        services.AddAssets();
+
+        services.AddJobScheduler();
+
         services.AddSingleton<ClientRegistry>();
         services.AddSingleton<IClientRegistry>(provider => provider.GetRequiredService<ClientRegistry>());
         services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<ClientRegistry>());
@@ -86,6 +100,7 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<IStartUpService>(it => it.GetRequiredService<ScoreManager>());
         services.AddSingleton<ISessionService>(it => it.GetRequiredService<ScoreManager>());
 
+        services.AddSingleton<IBodyPartFactory, BodyPartFactory>();
         services.AddSingleton<SnakeSpawner>();
         services.AddSingleton<IInputService<MovementDirectionInput>>(provider => provider.GetRequiredService<SnakeSpawner>());
         services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<SnakeSpawner>());
@@ -108,6 +123,8 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<SlimeSpawner>();
         services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<SlimeSpawner>());
         services.AddSingleton<IStartUpService>(provider => provider.GetRequiredService<SlimeSpawner>());
+
+        services.AddGameObjects();
 
         services.AddSingleton<IInputService<AbilityActivationInput>, AbilityManager>();
 

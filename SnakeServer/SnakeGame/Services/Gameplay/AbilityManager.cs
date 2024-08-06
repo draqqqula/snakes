@@ -1,7 +1,7 @@
 ﻿using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
-using SnakeGame.Models.Gameplay;
 using SnakeGame.Models.Input.Internal;
+using SnakeGame.Systems.GameObjects.Characters;
 using SnakeGame.Systems.Timer;
 using System;
 using System.Collections.Generic;

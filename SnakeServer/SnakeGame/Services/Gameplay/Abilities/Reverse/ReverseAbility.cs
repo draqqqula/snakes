@@ -29,20 +29,20 @@ internal class ReverseAbility() : CharacterAbility
                 reversedTrail.ExtendFront(transitNode);
             }
 
-            if (bodypart.Path.Tail is not null)
+            if (bodypart.Trail.Tail is not null)
             {
-                var reversedNode = ReverseTrail(bodypart.Path.Tail);
+                var reversedNode = ReverseTrail(bodypart.Trail.Tail);
                 transitNode = reversedNode;
             }
 
-            bodypart.Path = reversedTrail;
+            bodypart.Trail = reversedTrail;
 
-            bodypart.Transform.Angle = ReverseAngle(bodypart.Transform.Angle);
+            bodypart.Item.Transform.Angle = ReverseAngle(bodypart.Item.Transform.Angle);
         }
         Owner.Body.Reverse();
-        Owner.Transform.Position = Owner.Body.First().Transform.Position;
-        Owner.Transform.Angle = Owner.Body.First().Transform.Angle;
-        Owner.MovementDirection = Owner.Body.First().Transform.Angle;
+        Owner.Transform.Position = Owner.Body.First().Item.Transform.Position;
+        Owner.Transform.Angle = Owner.Body.First().Item.Transform.Angle;
+        Owner.MovementDirection = Owner.Body.First().Item.Transform.Angle;
     }
 
     private TrailNode? ReverseTrail(TrailNode end)

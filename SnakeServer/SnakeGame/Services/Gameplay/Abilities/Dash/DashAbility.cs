@@ -1,4 +1,4 @@
-﻿using SnakeGame.Models.Gameplay;
+﻿using SnakeGame.Systems.GameObjects.Characters;
 using SnakeGame.Systems.Timer;
 using System;
 using System.Collections.Generic;

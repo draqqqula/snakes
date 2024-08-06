@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="PickupPatterns\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

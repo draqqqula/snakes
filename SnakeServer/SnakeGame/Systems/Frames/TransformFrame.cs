@@ -62,6 +62,7 @@ internal class TransformFrame : TransformBase
 
     public override void Dispose()
     {
+        base.Dispose();
         _listener.NotifyDisposed(_id);
     }
 

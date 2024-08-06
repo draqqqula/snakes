@@ -8,5 +8,6 @@ internal class TransformObject : TransformBase
 
     public override void Dispose()
     {
+        base.Dispose();
     }
 }

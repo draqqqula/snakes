@@ -15,13 +15,14 @@ using SnakeGame.Models.Output.Internal;
 using SnakeGame.Systems.Respawn;
 using System.Numerics;
 
-namespace SnakeGame.Services.Gameplay.FrameDrivers;
+namespace SnakeGame.Systems.GameObjects.Characters;
 
 internal class SnakeSpawner(
     Dictionary<ClientIdentifier, SnakeCharacter> Players,
     List<PickupPoints> Pickups,
     Dictionary<TeamColor, TeamContext> Teams,
-    FrameFactory FrameFactory
+    FrameFactory FrameFactory,
+    IBodyPartFactory BodyPartFactory
     ) :
     ISessionService, IInputService<MovementDirectionInput>, IUpdateService
 {
@@ -41,9 +42,9 @@ internal class SnakeSpawner(
     public SnakeCharacter Spawn(ClientIdentifier id, IAbilityFactory abilityFactory)
     {
         var team = Teams.Where(it => it.Value.Members.Contains(id)).First();
-        var position = 
-            team.Value.Area.Transform.Position + 
-            MathEx.AngleToVector(SpawnPositionRandom.NextSingle() * MathF.PI * 2) * 
+        var position =
+            team.Value.Area.Transform.Position +
+            MathEx.AngleToVector(SpawnPositionRandom.NextSingle() * MathF.PI * 2) *
             (team.Value.Area.Radius / 2);
         var angle = MathEx.AngleBetweenVectors(position, Vector2.Zero);
 
@@ -60,21 +61,20 @@ internal class SnakeSpawner(
             Position = position,
             Size = transform.Size,
         };
-        var head = new Mechanics.Bodies.SquareBody() 
-        { 
-            Transform = FrameFactory.Create($"head_{team.Key}", transform) 
-        };
-        var body = new SnakeBodypart()
+        var head = new SquareBody()
         {
-            Transform = FrameFactory.Create($"body0_{team.Key}", transform),
-            Tier = 0,
+            Transform = FrameFactory.Create($"head_{team.Key}", transform)
+        };
+        var body = new SnakeSegment()
+        {
+            Item = BodyPartFactory.Create(transform, 0, team.Key)
         };
 
         var character = new SnakeCharacter()
         {
             Transform = main,
             Head = head,
-            Body = [ body ],
+            Body = [body],
             MovementDirection = angle,
             Team = team.Key,
             ClientId = id
@@ -84,17 +84,12 @@ internal class SnakeSpawner(
         return character;
     }
 
-    public void Despawn(ClientIdentifier id)
+    public void Despawn(IGameContext context, ClientIdentifier id)
     {
         var snake = Players[id];
         foreach (var segment in snake.Body)
         {
-            Pickups.Add(new PickupPoints()
-            {
-                Transform = FrameFactory.Create($"pickup{segment.Tier}", segment.Transform.ReadOnly),
-                Tier = segment.Tier,
-            });
-            segment.Transform.Dispose();
+            segment.Item.Detach(context);
         }
         Players.Remove(id);
         snake.Head.Transform.Dispose();
@@ -103,26 +98,14 @@ internal class SnakeSpawner(
 
     public void OnLeave(IGameContext context, ClientIdentifier id)
     {
-        var snake = Players[id];
-        foreach (var segment in snake.Body)
-        {
-            Pickups.Add(new PickupPoints()
-            {
-                Transform = FrameFactory.Create($"pickup{segment.Tier}", segment.Transform.ReadOnly),
-                Tier = segment.Tier,
-            });
-            segment.Transform.Dispose();
-        }
-        Players.Remove(id);
-        snake.Head.Transform.Dispose();
-        snake.Transform.Dispose();
+        Despawn(context, id);
     }
 
     public void Update(IGameContext context)
     {
         foreach (var character in Players.Values)
         {
-            character.Update(context.DeltaTime);
+            character.Update(context);
         }
     }
 }

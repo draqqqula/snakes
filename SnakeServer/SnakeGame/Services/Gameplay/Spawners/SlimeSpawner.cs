@@ -9,18 +9,23 @@ using SnakeGame.Mechanics.Collision.Shapes;
 using SnakeGame.Mechanics.Frames;
 using SnakeGame.Mechanics.Physics;
 using SnakeGame.Models.Gameplay;
+using SnakeGame.Systems.GameObjects.Characters;
 using System.Numerics;
 using System.Security.Claims;
 
 namespace SnakeGame.Services.Gameplay.Spawners;
 
 internal class SlimeSpawner(
+
     Dictionary<TeamContext, List<Slime>> Slimes, 
     FrameFactory Factory,
     Dictionary<TeamColor, TeamContext> Teams,
     Dictionary<ClientIdentifier, SnakeCharacter> Characters,
-    ICollisionChecker Collision
+    ICollisionChecker Collision,
+    IBodyPartFactory BodyPartFactory
+
     ) : 
+
     IUpdateService,
     IStartUpService
 {
@@ -29,7 +34,7 @@ internal class SlimeSpawner(
     private Dictionary<Slime, PhysicsMovement> SlimePhysics = [];
     public void Update(IGameContext context)
     {
-        CheckPlayers();
+        CheckPlayers(context);
 
         foreach (var slime in Slimes.SelectMany(it => it.Value).ToArray())
         {
@@ -51,7 +56,11 @@ internal class SlimeSpawner(
 
         foreach (var group in Slimes)
         {
-            ApplyAttraction(group.Value, context.DeltaTime);
+            var subGroups = group.Value.GroupBy(it => it.GroupId);
+            foreach (var subGroup in subGroups)
+            {
+                ApplyAttraction(subGroup.ToList(), context.DeltaTime);
+            }
             var balance = group.Value
                 .Sum(it => it.Value);
             group.Key.Score = balance;
@@ -59,7 +68,7 @@ internal class SlimeSpawner(
         }
     }
 
-    public void CheckPlayers()
+    public void CheckPlayers(IGameContext context)
     {
         foreach (var player in Characters.Values)
         {
@@ -71,42 +80,52 @@ internal class SlimeSpawner(
             }
             if (player.OnBase)
             {
-                DropPoints(player);
+                StorePoints(context, player);
             }
             player.OnBase = false;
         }
     }
 
-    public void DropPoints(SnakeCharacter character)
+    public void StorePoints(IGameContext context, SnakeCharacter character)
     {
         foreach (var segment in character.Body.Skip(1).ToArray())
         {
-            SpawnSlime(segment, Teams[character.Team]);
+            segment.Item.Store(context);
             character.Body.Remove(segment);
-            segment.Transform.Dispose();
         }
     }
 
-    private Slime SpawnSlime(TeamContext team, Transform transform, byte tier)
+    public Slime Spawn(TeamColor team, Transform transform, byte tier)
     {
-        var slime = new Slime()
+        var teamContext = Teams[team];
+        Slime slime;
+        if (teamContext.PowerUps.Contains("Doubler"))
         {
-            Transform = Factory.Create($"slime{tier}", transform),
-            Tier = tier,
-            Team = team
-        };
-        Slimes[team].Add(slime);
+            slime = new DoubledSlime()
+            {
+                Transform = Factory.Create($"slime{tier}_doubled", transform with { Size = new Vector2(4) }),
+                Tier = tier,
+                Team = teamContext,
+                TeamColor = team
+            };
+        }
+        else
+        {
+            slime = new Slime()
+            {
+                Transform = Factory.Create($"slime{tier}", transform),
+                Tier = tier,
+                Team = teamContext,
+                TeamColor = team
+            };
+        }
+        Slimes[teamContext].Add(slime);
         SlimePhysics.Add(slime, new PhysicsMovement(
-            new BounceInCircleBehaviour<RotatableSquare>(team.Area, slime, Collision))
+            new BounceInCircleBehaviour<RotatableSquare>(teamContext.Area, slime, Collision))
         {
             Deceleration = Deceleration
         });
         return slime;
-    }
-
-    private Slime SpawnSlime(SnakeBodypart segment, TeamContext team)
-    {
-        return SpawnSlime(team, segment.Transform.ReadOnly, segment.Tier);
     }
 
     public void Start(IGameContext context)
@@ -124,7 +143,7 @@ internal class SlimeSpawner(
             return;
         }
         slimeA.Tier += 1;
-        slimeA.Transform.ChangeAsset($"slime{slimeA.Tier}");
+        slimeA.UpdateAsset();
         slimeA.Transform.Position = (slimeA.Transform.Position + slimeB.Transform.Position) * 0.5f;
         Dispose(slimeB);
     }
@@ -150,15 +169,15 @@ internal class SlimeSpawner(
         }
         else if (character.MaxTier >= slime.Tier)
         {
-            character.JoinLast(slime.Tier, Factory);
+            character.JoinLast(BodyPartFactory.Create(slime.Transform.ReadOnly, slime.Tier, character.Team));
             Dispose(slime);
         }
         else
         {
-            var slimeA = SpawnSlime(slime.Team, slime.Transform.ReadOnly, (byte)(slime.Tier - 1));
+            var slimeA = Spawn(slime.TeamColor, slime.Transform.ReadOnly, (byte)(slime.Tier - 1));
             slimeA.Stun(0.3f);
             Push(slimeA, impactAngle + MathF.PI / 6);
-            var slimeB = SpawnSlime(slime.Team, slime.Transform.ReadOnly, (byte)(slime.Tier - 1));
+            var slimeB = Spawn(slime.TeamColor, slime.Transform.ReadOnly, (byte)(slime.Tier - 1));
             slimeB.Stun(0.3f);
             Push(slimeB, impactAngle - MathF.PI / 6);
             Dispose(slime);

@@ -23,4 +23,5 @@ internal class TeamContext(TeamArea area)
     }
     public List<ClientIdentifier> Members { get; } = [];
     public TeamArea Area { get; set; } = area;
+    public HashSet<string> PowerUps { get; init; } = [];
 }

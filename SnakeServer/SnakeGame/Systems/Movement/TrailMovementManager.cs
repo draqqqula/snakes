@@ -2,7 +2,7 @@
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
 using SnakeCore.Extensions;
-using SnakeGame.Models.Gameplay;
+using SnakeGame.Systems.GameObjects.Characters;
 using System.Drawing;
 using System.Numerics;
 
@@ -52,16 +52,16 @@ internal class TrailMovementManager(Dictionary<ClientIdentifier, SnakeCharacter>
             {
                 if (transit is not null)
                 {
-                    part.Transform.Position = transit.First().Position;
-                    part.Transform.Angle = transit.First().Rotation;
+                    part.Item.Transform.Position = transit.First().Position;
+                    part.Item.Transform.Angle = transit.First().Rotation;
 
-                    part.Path.ExtendFront(transit);
+                    part.Trail.ExtendFront(transit);
                     transit = null;
                 }
-                var extra = Math.Min(part.Path.TotalLength - character.BodyIndentation, character.ShrinkSpeed * context.DeltaTime);
+                var extra = Math.Min(part.Trail.TotalLength - character.BodyIndentation, character.ShrinkSpeed * context.DeltaTime);
                 if (extra > 0)
                 {
-                    transit = part.Path.Cut(extra);
+                    transit = part.Trail.Cut(extra);
                 }
             }
         }

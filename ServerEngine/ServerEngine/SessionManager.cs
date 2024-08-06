@@ -1,6 +1,7 @@
 ﻿using ServerEngine.Interfaces;
 using ServerEngine.Models;
 using ServerEngine.Models.Input;
+using System.Diagnostics;
 using System.Threading;
 
 namespace ServerEngine;
@@ -52,19 +53,24 @@ internal class SessionManager : ISessionManager
     {
         try
         {
+            var stopWatch = Stopwatch.StartNew();
             while (!handler.Closed)
             {
+                stopWatch.Restart();
                 await handler.Semaphore.WaitAsync();
-                await Task.Delay(FixedTimeStep);
-
                 state.Update(TimeSpan.FromMilliseconds(FixedTimeStep) * handler.TimeScale);
+
+                while (stopWatch.ElapsedMilliseconds < FixedTimeStep)
+                {
+
+                }
                 handler.Semaphore.Release();
             }
         }
         catch (Exception ex)
         {
             
-            Console.WriteLine($"Session closed due to unhandled exception \"{ex.Message}\"");
+            Console.WriteLine($"Session closed due to unhandled exception \"{ex.Message}\"{ex.StackTrace}");
         }
     }
 }

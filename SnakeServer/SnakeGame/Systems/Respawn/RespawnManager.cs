@@ -1,11 +1,14 @@
 ﻿using ServerEngine.Interfaces;
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
+using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Models.Input.Internal;
 using SnakeGame.Services;
-using SnakeGame.Services.Gameplay.FrameDrivers;
 using SnakeGame.Services.Output.Commands;
+using SnakeGame.Systems.GameObjects.Characters;
 using SnakeGame.Systems.Respawn;
+using SnakeGame.Systems.Timer;
+using SnakeGame.Systems.ViewPort.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +22,17 @@ internal class RespawnManager(
     SnakeSpawner Spawner,
     IGameConfiguration Configuration,
     IEnumerable<IAbilityFactory> Factories,
-    CommandSender Sender
+    CommandSender Sender,
+    IViewPortBinder Binder,
+    ITimerScheduler Timer
 
     ) : ISessionService, IInputService<OptionInput>, IUpdateService
 {
     private readonly TimeSpan RespawnTime = Configuration.Get<TimeSpan>(nameof(RespawnTime));
+
+    private readonly TimeSpan ShowKillerDelay = Configuration.Get<TimeSpan>(nameof(ShowKillerDelay));
+
+    private readonly TimeSpan ShowRespawnMenuDelay = Configuration.Get<TimeSpan>(nameof(ShowRespawnMenuDelay));
 
     private readonly Dictionary<ClientIdentifier, IAbilityFactory> _selectedAbilities = [];
 
@@ -31,16 +40,35 @@ internal class RespawnManager(
 
     private readonly IAbilityFactory[] _availableAbilities = Factories.ToArray();
 
-    public void QueueRespawn(ClientIdentifier id)
+    public void QueueRespawn(ClientIdentifier id, TransformBase? temporaryTarget, bool showRespawnMenuImmediately)
     {
+        Binder.Reset(id);
+        if (temporaryTarget is not null)
+        {
+            Timer.Set(ShowKillerDelay, () =>
+            {
+                if (!temporaryTarget.IsDisposed)
+                {
+                    Binder.Bind(id, temporaryTarget);
+                }
+            });
+        }
         var timer = RespawnTimer.Set(RespawnTime);
         _awaitingInput.Add(id, timer);
-        ShowRespawnMenuCommand.To(id, Sender, RespawnTime);
+        if (showRespawnMenuImmediately)
+        {
+            ShowRespawnMenuCommand.To(id, Sender, RespawnTime);
+        }
+        else
+        {
+            Timer.Set(ShowRespawnMenuDelay, () => ShowRespawnMenuCommand.To(id, Sender, RespawnTime - ShowRespawnMenuDelay));
+        }
     }
 
     private void Respawn(ClientIdentifier id)
     {
-        Spawner.Spawn(id, _selectedAbilities[id]);
+        var character = Spawner.Spawn(id, _selectedAbilities[id]);
+        Binder.Bind(id, character.Transform);
     }
 
     public void OnInput(ClientIdentifier id, OptionInput data)
@@ -57,12 +85,13 @@ internal class RespawnManager(
 
     public void OnJoin(IGameContext context, ClientIdentifier id)
     {
-        QueueRespawn(id);
+        QueueRespawn(id, null, true);
         _selectedAbilities.Add(id, _availableAbilities.First());
     }
 
     public void OnLeave(IGameContext context, ClientIdentifier id)
     {
+        Binder.Reset(id);
         _awaitingInput.Remove(id);
         _selectedAbilities.Remove(id);
     }
