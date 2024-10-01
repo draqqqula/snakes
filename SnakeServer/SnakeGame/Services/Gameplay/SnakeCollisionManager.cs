@@ -7,6 +7,7 @@ using SnakeGame.Mechanics.Frames;
 using SnakeGame.Mechanics.Respawn;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Systems.GameObjects.Characters;
+using SnakeGame.Systems.RuntimeCommands.Interfaces;
 using SnakeGame.Systems.Statistics.Interfaces;
 using System.Xml.Linq;
 
@@ -17,7 +18,8 @@ internal class SnakeCollisionManager
     Dictionary<ClientIdentifier, SnakeCharacter> Players,
     ICollisionChecker collision,
     SnakeSpawner SnakeSpawner,
-    RespawnManager RespawnManager
+    RespawnManager RespawnManager,
+    IStatisticsFactory Statistics
     ) : IUpdateService
 {
     class Kill
@@ -25,6 +27,9 @@ internal class SnakeCollisionManager
         public required SnakeCharacter Killer { get; init; }
         public required SnakeCharacter Victim { get; init; }
     }
+
+    private readonly IStatistic<int> KillCount = Statistics.Declare(nameof(KillCount), 0);
+    private readonly IStatistic<int> DeathCount = Statistics.Declare(nameof(DeathCount), 0);
 
     public void Update(IGameContext context)
     {
@@ -38,6 +43,8 @@ internal class SnakeCollisionManager
         }
         foreach (var kill in kills)
         {
+            KillCount.Change(kill.Killer.ClientId, c => c + 1);
+            DeathCount.Change(kill.Victim.ClientId, c => c + 1);
             SnakeSpawner.Despawn(context, kill.Victim.ClientId);
             RespawnManager.QueueRespawn(kill.Victim.ClientId, kill.Killer.Transform, false);
         }

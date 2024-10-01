@@ -1,7 +1,7 @@
 ﻿using ServerEngine.Interfaces;
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
-using SnakeCore.Extensions;
+using SnakeCore.MathExtensions;
 using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Systems.ViewPort.Interfaces;

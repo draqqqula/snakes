@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Content\map1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\patterns">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

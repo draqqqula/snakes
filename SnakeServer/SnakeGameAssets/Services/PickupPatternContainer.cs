@@ -20,9 +20,7 @@ internal class PickupPatternContainer : IPickupPatternContainer, IStartUpService
 
     public void Start(IGameContext context)
     {
-        string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        string strWorkPath = Path.GetDirectoryName(strExeFilePath);
-        _patterns = ExportPatterns(Path.Combine(strWorkPath, "Content", "patterns")).ToArray();
+        _patterns = ExportPatterns(ContentLoaderUtility.GetPath("patterns")).ToArray();
     }
 
     public IEnumerable<Pattern> ExportPatterns(string path)

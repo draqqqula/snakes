@@ -1,7 +1,7 @@
 ﻿using ServerEngine.Interfaces;
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
-using SnakeCore.Extensions;
+using SnakeCore.MathExtensions;
 using SnakeGame.Systems.GameObjects.Characters;
 using System.Drawing;
 using System.Numerics;

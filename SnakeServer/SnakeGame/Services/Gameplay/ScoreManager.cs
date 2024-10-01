@@ -2,7 +2,6 @@
 using ServerEngine.Interfaces;
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
-using SnakeCore.Extensions;
 using SnakeGame.Common;
 using SnakeGame.Mechanics.Collision;
 using SnakeGame.Mechanics.Frames;

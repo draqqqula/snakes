@@ -1,12 +1,12 @@
 ﻿using ServerEngine.Interfaces;
-using SnakeCore.Extensions;
+using SnakeCore.MathExtensions;
 using SnakeGame.Common;
 using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Collision.Shapes;
 using SnakeGame.Mechanics.Frames;
 using SnakeGame.Mechanics.Physics;
-using SnakeGame.Models.Gameplay;
 using SnakeGame.Services.Gameplay.Spawners;
+using SnakeGame.Systems.GameObjects.PickUps;
 using SnakeGame.Systems.Jobs.Interfaces;
 using System;
 using System.Collections.Generic;

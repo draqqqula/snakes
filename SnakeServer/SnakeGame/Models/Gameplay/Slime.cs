@@ -1,7 +1,8 @@
-﻿using SnakeCore.Extensions;
+﻿using SnakeCore.MathExtensions;
 using SnakeGame.Common;
 using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Physics;
+using SnakeGame.Systems.GameObjects.PickUps;
 using System.Numerics;
 
 namespace SnakeGame.Models.Gameplay;

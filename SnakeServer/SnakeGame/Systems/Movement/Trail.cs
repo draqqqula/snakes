@@ -1,5 +1,4 @@
-﻿using SnakeCore.Extensions;
-using System.Security.Cryptography.X509Certificates;
+﻿using SnakeCore.MathExtensions;
 
 namespace SnakeGame.Systems.Movement;
 

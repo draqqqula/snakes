@@ -1,5 +1,4 @@
-﻿using SnakeCore.Extensions;
-using SnakeGame.Common;
+﻿using SnakeGame.Common;
 using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Collision;
 using SnakeGame.Mechanics.Collision.Shapes;

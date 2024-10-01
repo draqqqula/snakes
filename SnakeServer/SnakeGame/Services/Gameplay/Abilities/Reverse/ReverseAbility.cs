@@ -1,4 +1,4 @@
-﻿using SnakeCore.Extensions;
+﻿using SnakeCore.MathExtensions;
 using SnakeGame.Systems.Movement;
 using SnakeGame.Systems.Timer;
 using System;

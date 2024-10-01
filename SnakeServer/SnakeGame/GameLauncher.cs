@@ -24,7 +24,6 @@ using SnakeGame.Services.Gameplay.Abilities;
 using SnakeGame.Services.Gameplay.Abilities.Dash;
 using SnakeGame.Services.Gameplay.Abilities.Magnet;
 using SnakeGame.Services.Gameplay.Abilities.Reverse;
-using SnakeGame.Services.Gameplay.FrameDrivers;
 using SnakeGame.Services.Gameplay.Spawners;
 using SnakeGame.Services.Input;
 using SnakeGame.Services.Output;
@@ -36,10 +35,13 @@ using SnakeGame.Systems.Movement;
 using SnakeGame.Systems.Respawn;
 using SnakeGame.Systems.Serializers;
 using SnakeGame.Systems.Service;
-using SnakeGame.Systems.Statistics;
+using SnakeGame.Systems.RuntimeCommands;
 using SnakeGame.Systems.Timer;
 using SnakeGame.Systems.ViewPort.Interfaces;
 using SnakeGameAssets;
+using SnakeGame.Systems.GameObjects.PickUps;
+using SnakeGame.Systems.Statistics;
+using SnakeGame.Systems.Digging;
 
 namespace SnakeGame;
 
@@ -50,6 +52,8 @@ public class GameLauncher : ISessionLauncher
         services.AddCommonSerializers();
 
         services.AddRuntimeCommands();
+
+        services.AddStatistics();
 
         services.AddAssets();
 
@@ -131,5 +135,7 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<IInputFormatter<BinaryInput>, MovementDirectionInputFormatter>();
         services.AddSingleton<IInputFormatter<BinaryInput>, AbilityInputFormatter>();
         services.AddSingleton<IInputFormatter<BinaryInput>, OptionInputFormatter>();
+
+        services.AddDigging();
     }
 }

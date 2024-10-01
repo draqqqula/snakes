@@ -3,7 +3,7 @@ using ServerEngine.Interfaces;
 using ServerEngine.Interfaces.Output;
 using ServerEngine.Interfaces.Services;
 using ServerEngine.Models;
-using SnakeCore.Extensions;
+using SnakeCore.MathExtensions;
 using SnakeGame.Common;
 using SnakeGame.Mechanics.Bodies;
 using SnakeGame.Mechanics.Collision.Resolvers;
@@ -12,6 +12,7 @@ using SnakeGame.Mechanics.ViewPort;
 using SnakeGame.Models.Gameplay;
 using SnakeGame.Models.Input.Internal;
 using SnakeGame.Models.Output.Internal;
+using SnakeGame.Systems.GameObjects.PickUps;
 using SnakeGame.Systems.Respawn;
 using System.Numerics;
 

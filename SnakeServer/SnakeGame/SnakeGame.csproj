@@ -27,7 +27,7 @@
     <Folder Include="Configuration\Interfaces\" />
     <Folder Include="PickupPatterns\" />
     <Folder Include="Systems\GameObjects\PowerUps\Interfaces\" />
-    <Folder Include="Systems\Statistics\Models\" />
+    <Folder Include="Systems\RuntimeCommands\Models\" />
   </ItemGroup>
 
 </Project>

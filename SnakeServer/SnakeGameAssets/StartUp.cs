@@ -17,5 +17,6 @@ public static class StartUp
         services.AddSingleton<PickupPatternContainer>();
         services.AddSingleton<IPickupPatternContainer>(provider => provider.GetRequiredService<PickupPatternContainer>());
         services.AddSingleton<IStartUpService>(provider => provider.GetRequiredService<PickupPatternContainer>());
+        services.AddSingleton<IMapLoader, MapLoader>();
     }
 }
