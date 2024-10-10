@@ -11,6 +11,8 @@ using SnakeGame.Systems.Movement;
 using System.Text;
 using ServerEngine.Models;
 using ServerEngine.Interfaces;
+using SnakeGame.Systems.Modifiers.Interfaces;
+using SnakeGame.Systems.Modifiers;
 
 namespace SnakeGame.Systems.GameObjects.Characters;
 
@@ -25,9 +27,10 @@ internal class SnakeCharacter : SquareBody
 
     #region Сharacteristics
     public float MovementDirection { get; set; } = 0f;
-    public float Speed { get; set; } = 40f;
+    public IModifiable<float> Speed { get; set; } = new ModifiableValue<float>(40f);
     public float BodyIndentation { get; set; } = 4f;
-    public float RotationSpeed { get; set; } = MathF.PI * 2f;
+    public IModifiable<float> RotationSpeed { get; set; } = new ModifiableValue<float>(MathF.PI * 2f);
+    public IModifiable<float> ExplorationReach { get; set; } = new ModifiableValue<float>(2f);
     public float ShrinkSpeed { get; set; } = 80f;
     public bool OnBase { get; set; } = false;
     public float SortingIntervalMax { get; set; } = 0.5f;

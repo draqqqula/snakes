@@ -20,5 +20,6 @@ internal static class StartUp
         services.AddSingleton<IBinarySerializer<string>, StringSerializer>();
         services.AddSingleton<IBinarySerializer<int>, IntSerializer>();
         services.AddSingleton<IBinarySerializer<Vector2>, Vector2Serializer>();
+        services.AddSingleton<IBinarySerializer<int[]>, IntArraySerializer>();
     }
 }

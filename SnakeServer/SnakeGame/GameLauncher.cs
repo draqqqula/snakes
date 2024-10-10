@@ -113,10 +113,7 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<IAbilityFactory, AbilityFactory<ReverseAbility>>();
         services.AddSingleton<IAbilityFactory, AbilityFactory<DashAbility>>();
         services.AddSingleton<IAbilityFactory, AbilityFactory<MagnetAbility>>();
-        services.AddSingleton<RespawnManager>();
-        services.AddSingleton<IInputService<OptionInput>>(provider => provider.GetRequiredService<RespawnManager>());
-        services.AddSingleton<ISessionService>(provider => provider.GetRequiredService<RespawnManager>());
-        services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<RespawnManager>());
+        services.AddRespawn();
 
         services.AddSingleton<IUpdateService, TrailMovementManager>();
         services.AddSingleton<IUpdateService, SnakeCollisionManager>();
@@ -137,5 +134,7 @@ public class GameLauncher : ISessionLauncher
         services.AddSingleton<IInputFormatter<BinaryInput>, OptionInputFormatter>();
 
         services.AddDigging();
+
+        services.AddRespawnEventAggregator();
     }
 }

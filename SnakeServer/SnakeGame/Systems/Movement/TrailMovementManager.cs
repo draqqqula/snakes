@@ -20,11 +20,11 @@ internal class TrailMovementManager(Dictionary<ClientIdentifier, SnakeCharacter>
             character.Transform.Angle = character.Transform.Angle.RotateTowards(
                 character.MovementDirection,
                 MathF.PI * 2,
-                character.RotationSpeed,
+                character.RotationSpeed.Value,
                 context.DeltaTime);
 
             var direction = MathEx.AngleToVector(character.Transform.Angle);
-            var distance = character.Speed * direction * context.DeltaTime;
+            var distance = character.Speed.Value * direction * context.DeltaTime;
 
             if (!PlayableZone.Contains((PointF)(character.Transform.Position + distance)))
             {

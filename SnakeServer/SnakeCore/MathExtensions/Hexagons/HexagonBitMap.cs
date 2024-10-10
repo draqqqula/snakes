@@ -16,7 +16,7 @@ public abstract class HexagonBitMap
 		_data = data;
 	}
 
-	protected abstract bool TryGetIndex(int q, int r, out int index);
+	public abstract bool TryGetIndex(int q, int r, out int index);
 
 	public bool? this[int q, int r]
 	{

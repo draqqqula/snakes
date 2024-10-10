@@ -11,28 +11,28 @@ namespace SnakeCore.MathExtensions;
 
 public class QRCoordinateBasedHexagonMap : HexagonBitMap
 {
-    private readonly int _startQ;
-    private readonly int _endQ;
-    private readonly int _startR;
-    private readonly int _endR;
-    public QRCoordinateBasedHexagonMap(BitArray data, int startQ, int startR, int endQ, int endR) : base(data)
+    private readonly int _minQ;
+    private readonly int _maxQ;
+    private readonly int _minR;
+    private readonly int _maxR;
+    public QRCoordinateBasedHexagonMap(BitArray data, int minQ, int minR, int maxQ, int maxR) : base(data)
     {
-        _startQ = startQ;
-        _endQ = endQ;
-        _startR = startR;
-        _endR = endR;
+        _minQ = minQ;
+        _maxQ = maxQ;
+        _minR = minR;
+        _maxR = maxR;
     }
 
-    protected override bool TryGetIndex(int q, int r, out int index)
+    public override bool TryGetIndex(int q, int r, out int index)
     {
         var half = Convert.ToInt32(MathF.Floor((float)q / 2));
         var r0 = r + half;
-        if (q < _startQ || q >= _endQ || r0 < _startR || r0 >= _endR)
+        if (q < _minQ || q >= _maxQ || r0 < _minR || r0 >= _maxR)
         {
             index = 0;
             return false;
         }
-        index = (q - _startQ) * (_endR - _startR) + r0 - _startR;
+        index = (q - _minQ) * (_maxR - _minR) + r0 - _minR;
         return true;
     }
 }

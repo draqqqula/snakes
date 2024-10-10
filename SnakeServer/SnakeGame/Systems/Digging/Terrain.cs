@@ -7,29 +7,51 @@ using SnakeGame.Systems.Digging.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SnakeGame.Systems.Digging;
 
-internal class Terrain(IGameConfiguration Configuration, IMapProvider MapProvider)
+internal class Terrain(IGameConfiguration Configuration, IMapProvider MapProvider) : IStartUpService
 {
-    private readonly HexagonGrid _grid = new HexagonGrid(Configuration.Get<float>("MapTileSize"));
-    private readonly HexagonBitMap _map = MapProvider.GetMap();
+    private HexagonGrid _grid;
+    private HexagonBitMap _map;
 
-    public bool TryDig(Circle circle)
+    public void Start(IGameContext context)
     {
-        var tiles = _grid.Inside(circle.Position, circle.Radius);
-        var terrainTiles = tiles.Select(coordinates => (coordinates, _map[coordinates.Q, coordinates.R]))
-            .Where(it => it.Item2.HasValue && it.Item2.Value);
-        if (terrainTiles.Any() )
+        _grid = new HexagonGrid(Configuration.Get<float>("MapTileSize"));
+        _map = MapProvider.GetMap();
+    }
+
+    public IEnumerable<int> Dig(Circle explorationCircle, Circle diggingCircle)
+    {
+        var terrainFound = _grid
+            .Inside(explorationCircle.Position, explorationCircle.Radius)
+            .Select(coordinates => _map[coordinates.Q, coordinates.R])
+            .Any(IsTrue);
+
+        if (!terrainFound)
         {
-            foreach (var tile in terrainTiles)
-            {
-                _map[tile.coordinates] = false;
-            }
-            return true;
+            yield break;
         }
-        return false;
+
+        var diggedTiles = _grid
+            .Inside(diggingCircle.Position, diggingCircle.Radius);
+
+        foreach (var tile in diggedTiles)
+        {
+            var flag = IsTrue(_map[tile]);
+            if (flag && _map.TryGetIndex(tile.Q, tile.R, out var index))
+            {
+                _map[tile] = false;
+                yield return index;
+            }
+        }
+    }
+
+    private bool IsTrue(bool? nullable)
+    {
+        return nullable.HasValue && nullable.Value;
     }
 }

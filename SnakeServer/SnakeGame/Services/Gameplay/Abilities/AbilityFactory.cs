@@ -7,9 +7,11 @@ internal class AbilityFactory<T> : IAbilityFactory where T : CharacterAbility, n
 {
     public CharacterAbility Create(SnakeCharacter character)
     {
-        return new T()
+        var ability = new T()
         { 
             Owner = character 
         };
+        ability.Register();
+        return ability;
     }
 }

@@ -14,7 +14,7 @@ internal class MapLoader : IMapLoader
 {
     public HexagonBitMap GetMap(string name)
     {
-        return BuildMap(ContentLoaderUtility.GetPath(name));
+        return BuildMap(ContentLoaderUtility.GetPath($"{name}.bytes"));
     }
 
     public HexagonBitMap BuildMap(string path)

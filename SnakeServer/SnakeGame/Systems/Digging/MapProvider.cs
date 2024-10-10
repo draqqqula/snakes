@@ -23,9 +23,10 @@ internal class MapProvider
     ) : IMapProvider, ISessionService, IStartUpService
 {
     private readonly string[] MapPool = Configuration.Get<string[]>("MapPool");
+    private readonly float TileSize = 1;
     private readonly IMapLoader Loader = Loader;
     private readonly Random Random = new Random();
-    private readonly RuntimeCommand<string> LoadMapCommand = new RuntimeCommand<string>("LoadMap", RuntimeCommandFactory);
+    private readonly RuntimeCommand<string, float> LoadMapCommand = new RuntimeCommand<string, float>("LoadMap", RuntimeCommandFactory);
     private string MapName;
     public HexagonBitMap GetMap()
     {
@@ -34,7 +35,7 @@ internal class MapProvider
 
     public void OnJoin(IGameContext context, ClientIdentifier id)
     {
-        LoadMapCommand.Send(id, MapName);
+        LoadMapCommand.Send(id, MapName, TileSize);
     }
 
     public void OnLeave(IGameContext context, ClientIdentifier id)

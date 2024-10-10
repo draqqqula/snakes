@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ServerEngine.Interfaces.Services;
 using SnakeGame.Systems.Digging.Interfaces;
+using SnakeGame.Systems.Respawn;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,9 @@ public static class StartUp
         services.AddSingleton<IStartUpService>(provider => provider.GetRequiredService<MapProvider>());
 
         services.AddSingleton<Terrain>();
+        services.AddSingleton<IStartUpService>(provider => provider.GetRequiredService<Terrain>());
         services.AddSingleton<DiggingManager>();
         services.AddSingleton<IUpdateService>(provider => provider.GetRequiredService<DiggingManager>());
+        services.AddSingleton<IRespawnEventListener>(provider => provider.GetRequiredService<DiggingManager>());
     }
 }

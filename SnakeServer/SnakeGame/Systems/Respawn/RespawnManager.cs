@@ -26,7 +26,7 @@ internal class RespawnManager(
     IViewPortBinder Binder,
     ITimerScheduler Timer
 
-    ) : ISessionService, IInputService<OptionInput>, IUpdateService
+    ) : ISessionService, IInputService<OptionInput>, IUpdateService, IRespawnEventSource
 {
     private readonly TimeSpan RespawnTime = Configuration.Get<TimeSpan>(nameof(RespawnTime));
 
@@ -39,6 +39,8 @@ internal class RespawnManager(
     private readonly Dictionary<ClientIdentifier, RespawnTimer> _awaitingInput = [];
 
     private readonly IAbilityFactory[] _availableAbilities = Factories.ToArray();
+
+    public event Action<SnakeCharacter> OnRespawn;
 
     public void QueueRespawn(ClientIdentifier id, TransformBase? temporaryTarget, bool showRespawnMenuImmediately)
     {
@@ -69,6 +71,7 @@ internal class RespawnManager(
     {
         var character = Spawner.Spawn(id, _selectedAbilities[id]);
         Binder.Bind(id, character.Transform);
+        OnRespawn.Invoke(character);
     }
 
     public void OnInput(ClientIdentifier id, OptionInput data)

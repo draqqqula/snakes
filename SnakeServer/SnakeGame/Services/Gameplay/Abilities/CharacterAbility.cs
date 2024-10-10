@@ -25,5 +25,9 @@ internal abstract class CharacterAbility
         return true;
     }
 
+    public virtual void Register()
+    {
+    }
+
     protected abstract void Use(ITimerScheduler scheduler);
 }
